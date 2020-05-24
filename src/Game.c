@@ -117,3 +117,105 @@ bool canMove(Box * ** board, int size) {
     }
     return false;
 }
+
+/**
+ * @fn int slide(Direction dir, int ** board, int size)
+ * @brief apply a move on the board
+ * @param dir The Direction where the move go
+ * @param board the game board
+ * @param size of the game board
+ * @return the number of move made
+ */
+int slide(Directions dir, Box * ** board, int size) {
+
+	int move = 0;
+	switch (dir) {
+		case LEFT:
+		for (int i = 1; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				int k;
+				for (k = i; k > 0 && board[j][k - 1] == NULL; k--) {
+					if (board[j][k] == NULL) continue;
+					board[j][k - 1] = board[j][k];
+					board[j][k] = NULL;
+					move++;
+				}
+
+				if (k > 0 && board[j][k - 1] != NULL && board[j][k] != NULL && board[j][k - 1]->value == board[j][k]->value) {
+					board[j][k - 1]->value *= 2;
+					free(board[j][k]);
+                    board[j][k] = NULL;
+					move++;
+				}
+			}
+		}
+		break;
+
+	case RIGHT:
+		for (int i = size - 1; i >= 0; i--) {
+			for (int j = 0; j < size; j++) {
+				int k;
+				for (k = i; k < size - 1 && board[j][k + 1] == NULL; k++) {
+					if (board[j][k] == NULL) continue;
+					board[j][k + 1] = board[j][k];
+					board[j][k] = NULL;
+					move++;
+				}
+
+				if (k < size - 1 && board[j][k + 1] != NULL && board[j][k] != NULL && board[j][k + 1]->value == board[j][k]->value) {
+					board[j][k + 1]->value *= 2;
+					free(board[j][k]);
+                    board[j][k] = NULL;
+					move++;
+				}
+			}
+		}
+		break;
+
+	case UP:
+		for (int i = 1; i < size; i++) {
+			for (int j = 0; j < size; j++) {
+				int k;
+				for (k = i; k > 0 && board[k - 1][j] == NULL; k--) {
+					if (board[k][j] == NULL) continue;
+					board[k - 1][j] = board[k][j];
+					board[k][j] = NULL;
+					move++;
+				}
+
+				if (k > 0 && board[k - 1][j] != NULL && board[k][j] != NULL && board[k - 1][j]->value == board[k][j]->value) {
+					board[k - 1][j]->value *= 2;
+					free(board[k][j]);
+                    board[k][j] = NULL;
+					move++;
+				}
+			}
+		}
+		break;
+
+	case DOWN:
+		for (int i = size - 1; i >= 0; i--) {
+			for (int j = 0; j < size; j++) {
+				int k;
+				for (k = i; k < size - 1 && board[k + 1][j] == NULL; k++) {
+					if (board[k][j] == NULL) continue;
+					board[k + 1][j] = board[k][j];
+					board[k][j] = NULL;
+					move++;
+				}
+
+				if (k < size - 1 && board[k + 1][j] != NULL && board[k][j] != NULL && board[k + 1][j]->value == board[k][j]->value) {
+					board[k + 1][j]->value *= 2;
+					free(board[k][j]);
+                    board[k][j] = NULL;
+					move++;
+				}
+			}
+		}
+		break;
+
+	default: printf("[Error] An error occured >> Direction for sliding unknown.\n Please contact developpers. \n"); exit(EXIT_FAILURE); break;
+	}
+
+	return move;
+}
