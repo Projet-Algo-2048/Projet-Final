@@ -9,6 +9,7 @@
 #ifndef Game
 #define Game
 
+bool canMove(Box * **, int);
 int printBoard(Box * **, int);
 Box * generateNewBox(Box * ** , int );
 int game();

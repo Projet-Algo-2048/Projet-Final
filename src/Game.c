@@ -23,7 +23,24 @@ int game(/* -> parameter to initialize game <- */) {
 	while (true) {
         generateNewBox(state.board, state.size);
         printBoard(state.board, state.size);
-		// -> code for the game course here <-
+
+        if (!canMove(state.board, state.size)) break;
+
+        int moves = 0;
+        do {
+            int c;
+            do {
+                printf("Bouger le plateau : ");
+                scanf("%d", &c);
+            } while (c != 2 && c != 6 && c != 8 && c != 4);
+            switch (c) {
+            case 4: moves = slide(LEFT, state.board, state.size); break;
+            case 6: moves = slide(RIGHT, state.board, state.size); break;
+            case 8: moves = slide(UP, state.board, state.size); break;
+            case 2: moves = slide(DOWN, state.board, state.size); break;
+            }
+            if (moves == 0) printf("2Can not move like that %c\n", c);
+        } while (moves == 0);
 	}
 	printf("Game Over ! \n");
 
@@ -75,10 +92,28 @@ Box * generateNewBox(Box * **board, int size) {
 int printBoard(Box * ** board, int size) {
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            printf(" %d |", board[i][j]);
+            (board[i][j] == NULL) ? printf("   |") : printf(" %d |", board[i][j]->value);
         }
         printf("\n");
     }
     printf("\n");
     return 0;
+}
+
+/**
+ * @fn bool canMove(int** board, int size)
+ * @brief chech if a move is possible
+ * @param board the game board
+ * @param the size of the game board
+ * @return true if a move is possible false otherwise
+ */
+bool canMove(Box * ** board, int size) {
+    for (int i = 0; i < size; i++) {
+        for (int j = 0; j < size; j++) {
+            if (board[i][j] == NULL) return true;
+            if (j != size - 1 && board[i][j] != NULL && board[i][j + 1] != NULL && board[i][j]->value == board[i][j + 1]->value) return true;
+            if (i != size - 1 && board[i][j] != NULL && board[i + 1][j] != NULL && board[i][j]->value == board[i + 1][j]->value) return true;
+        }
+    }
+    return false;
 }
