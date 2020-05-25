@@ -1,2 +1,4 @@
 function to allocate board / free
 atexit()
+
+mkdir logs/
