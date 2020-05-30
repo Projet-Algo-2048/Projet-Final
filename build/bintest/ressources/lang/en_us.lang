@@ -1,4 +1,5 @@
-# language translation file 
-# How it work : key = value
-
+Lang = English
+#######################################################
+#				 English Translation                  #
+#######################################################
 test.1 = test

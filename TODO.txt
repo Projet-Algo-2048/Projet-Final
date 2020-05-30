@@ -1,4 +1,6 @@
 function to allocate board / free
 atexit()
 
-language copy ressource to bin test
+language : copy ressource to bin test
+language : find an alternative to throm exception
+language : another way for freeing AvailableLanguage

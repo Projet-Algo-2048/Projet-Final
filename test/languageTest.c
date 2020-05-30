@@ -10,12 +10,12 @@ int main(void) {
 	testInt(loadLanguage("en_fr"), -1);
 
 	unloadLanguage();
-	printf("Data Null before language change test \n");
-	testPointer(Data, NULL, true);
+	printf("TranslationList Null before language change test \n");
+	testPointer(TranslationList, NULL, true);
 
 	loadLanguage("en_us");
-	printf("Data not Null after language change test \n");
-	testPointer(Data, NULL, false);
+	printf("TranslationList not Null after language change test \n");
+	testPointer(TranslationList, NULL, false);
 
 	printfTranslationList();
 
@@ -24,6 +24,13 @@ int main(void) {
 
 	printf("Language translation with not existing id test \n");
 	testString(getTranslatedText("test.2"), "test.2");
-	exit(0);
+
+	getAvailableLanguage("ressources/lang/");
+	printf("Language Available test \n");
+	testPointer(AvailableLanguage,NULL,false);
+
+	printfAvailableLanguage();
+
+	freeAvailableLanguage();
 }
 

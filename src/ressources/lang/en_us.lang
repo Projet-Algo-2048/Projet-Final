@@ -1,0 +1,7 @@
+Lang = American English
+# language translation file 
+# How it work : 
+# Each line must follow this pattern 'key = value'
+# The very first line must be 'Lang = <language>'
+
+debug.test = this is a debugging message
