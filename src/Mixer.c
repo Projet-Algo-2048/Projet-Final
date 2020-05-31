@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    Mix_Music* music = Mix_LoadMUS("ressources/SDL/music/smash-mouth-all-star.wav");
+    Mix_Music* music = Mix_LoadMUS("ressources/SDL/music/Never Gonna Give You Up Original.mp3");
 
     if (music == NULL)
     {
