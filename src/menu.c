@@ -13,6 +13,7 @@
 void SDL_EXITWITHERROR (const char *message);
 
 #include "option.c"
+#include "drawgrid.c"
 
 int main ()
 {
@@ -319,6 +320,7 @@ while (programRUNNIG)
                         (event.button.y < optionButtonRect.y + optionButtonRect.h)&&
                         (event.button.y > optionButtonRect.y))
                             {
+                                // bool afin de ferme le programme si on clique sur la croix pdnt les options
                             int trueFalse = 1;
                             trueFalse = optionMenu(&theme, &raid, &green, &blue, &volume, neverGonna, white, red, window, renderer, titleFONT, optionButtonSurface, optionButton);
                             if (trueFalse == 0)
@@ -328,7 +330,18 @@ while (programRUNNIG)
                             ggreen = green;
                             bblue = blue;
                             } 
-                            
+                    
+                    //launch the game
+                    if ((event.button.x < playButtonRect.x + playButtonRect.w)&&
+                        (event.button.x > playButtonRect.x) &&
+                        (event.button.y < playButtonRect.y + playButtonRect.h)&&
+                        (event.button.y > playButtonRect.y))
+                        {
+                            int playTrueFalse = 1;
+                            playTrueFalse = drawGrid(&raid, &green, &blue, renderer, window);
+                            if (playTrueFalse == 0)
+                                programRUNNIG = SDL_FALSE;
+                        }
 
 
                     break;
