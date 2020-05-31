@@ -55,8 +55,7 @@ $(BUILD_DIR) :
 
 # Install et compile tout les fichier necessaire pour l'execution de l'application
 install : 2048 $(BIN_DIR) ## Install and update app
-	@echo "\033[33m Copying ressource files ... \033[0m"
-	@cp -r $(SRC_DIR)$(RES_DIR) $(BIN_DIR)
+	@if [ -d $(SRC_DIR)$(RES_DIR) ]; then echo "\033[33m Copying ressource files ... \033[0m"; cp -r $(SRC_DIR)$(RES_DIR) $(BIN_DIR); else echo "\033[33m No ressource to copy \033[0m"; fi
 
 
 run : install ## Run and update app
