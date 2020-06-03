@@ -338,7 +338,7 @@ while (programRUNNIG)
                         (event.button.y > playButtonRect.y))
                         {
                             int playTrueFalse = 1;
-                            playTrueFalse = drawGrid(&raid, &green, &blue, renderer, window);
+                            playTrueFalse = drawGrid(&raid, &green, &blue, titleFONT, renderer, window);
                             if (playTrueFalse == 0)
                                 programRUNNIG = SDL_FALSE;
                         }

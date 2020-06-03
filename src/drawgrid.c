@@ -5,16 +5,22 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
 
+
 #define NUMBER_OF_CASE 4
 #define RECTANGLE_WIDTH 540
 #define RECTANGLE_HIGH 540
 
-int drawGrid (int *red, int *green, int *blue,  SDL_Renderer *renderer, SDL_Window *window)
+#define BLOCK_HEIGH 110
+#define BLOCK_WIDTH 110
+
+void drawBox (SDL_Rect rectangle, SDL_Renderer *renderer);
+
+int drawGrid (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *renderer, SDL_Window *window)
 {
     //reset the screen
     SDL_RenderClear(renderer);
 
-    //creation d un rectangle gris
+    //creation du rectangle pricipal
     SDL_Rect rectangle;
     rectangle.x = 50;
     rectangle.y = 120;
@@ -23,7 +29,11 @@ int drawGrid (int *red, int *green, int *blue,  SDL_Renderer *renderer, SDL_Wind
 
    
     
-
+        SDL_Rect chiffreRect;
+        chiffreRect.x = rectangle.x +20;
+        chiffreRect.y = rectangle.y + 20;
+        chiffreRect.w = 122;
+        chiffreRect.h = 122;
 
     SDL_bool playing = SDL_TRUE;
     SDL_Event playEvent;
@@ -58,9 +68,37 @@ int drawGrid (int *red, int *green, int *blue,  SDL_Renderer *renderer, SDL_Wind
             ///draw the image to the window
             SDL_SetRenderDrawColor(renderer, 44, 44, 44, 255);
             SDL_RenderFillRect(renderer, &rectangle);
+            drawBox (rectangle, renderer);
+            //SDL_SetRenderDrawColor(renderer, 255, 0, 0, 0);
+            //SDL_RenderFillRect(renderer, &chiffreRect);
             SDL_SetRenderDrawColor(renderer, *red, *green, *blue, 0);
 
             SDL_RenderPresent(renderer);
+            
         }
 
 }
+
+void drawBox (SDL_Rect rectangle, SDL_Renderer *renderer)
+ {
+    int a,b = 1;
+    for (int y=0; y<4; y++) 
+        {
+            for (int x=0; x<4; x++)
+                {
+                    SDL_Rect chiffreRect;
+                    
+                    chiffreRect.w = BLOCK_WIDTH;
+                    chiffreRect.h = BLOCK_HEIGH;
+                    chiffreRect.x = rectangle.x + chiffreRect.w * x + 20 * (x+1);
+                    chiffreRect.y = rectangle.y + chiffreRect.h *y + 20* (y+1);
+                    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 0);
+                    SDL_RenderFillRect(renderer, &chiffreRect);
+                    
+                }
+            
+        }
+ }
+
+
+    
