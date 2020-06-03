@@ -6,23 +6,23 @@
 #include <SDL2/SDL_mixer.h>
 
 #define NUMBER_OF_CASE 4
+#define RECTANGLE_WIDTH 540
+#define RECTANGLE_HIGH 540
 
-int drawGrid (int *red, int *blue, int *green, SDL_Renderer *renderer, SDL_Window *window)
+int drawGrid (int *red, int *green, int *blue,  SDL_Renderer *renderer, SDL_Window *window)
 {
     //reset the screen
     SDL_RenderClear(renderer);
 
     //creation d un rectangle gris
-    SDL_Surface *rectangle = SDL_CreateRGBSurface(0, 450, 450 , 32, 0, 0, 0, 0);
-    if (!rectangle)
-        {
-            SDL_EXITWITHERROR("creation rectangle");
-        }
-    SDL_FillRect(rectangle, NULL, SDL_MapRGB(rectangle->format, 44, 44, 44));
-    SDL_Texture *rectTexture = SDL_CreateTextureFromSurface(renderer, rectangle);
-    SDL_FreeSurface(rectangle);
-    SDL_Rect Rect;
-    SDL_QueryTexture(rectTexture, NULL, NULL, &Rect.w, &Rect.h);
+    SDL_Rect rectangle;
+    rectangle.x = 50;
+    rectangle.y = 120;
+    rectangle.w = RECTANGLE_WIDTH;
+    rectangle.h = RECTANGLE_HIGH;
+
+   
+    
 
 
     SDL_bool playing = SDL_TRUE;
@@ -55,14 +55,11 @@ int drawGrid (int *red, int *blue, int *green, SDL_Renderer *renderer, SDL_Windo
             //clear the screen
             SDL_RenderClear(renderer);
 
-            //SDL_SetRenderDrawColor(renderer, *red, *green, *blue, 0);
-            //SDL_RenderClear(renderer);
-
-            
-
-            //draw the images to the window
-            SDL_RenderCopy(renderer, rectTexture, NULL, NULL);
+            ///draw the image to the window
+            SDL_SetRenderDrawColor(renderer, 44, 44, 44, 255);
+            SDL_RenderFillRect(renderer, &rectangle);
             SDL_SetRenderDrawColor(renderer, *red, *green, *blue, 0);
+
             SDL_RenderPresent(renderer);
         }
 
