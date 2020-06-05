@@ -1,19 +1,23 @@
 ################# VARIABLE ###################
 NAME = 2048
-INPUT_FILE = Main.c
+INPUT = Main.c
+CFLAGS = $$(sdl2-config --cflags --libs) -lSDL2_image -lSDL2_mixer -lSDL2_ttf
 
-TEMPDIR = .temp/
-SRCDIR = src/
-BINDIR = bin/
-TESTDIR = test/
-RESDIR = ressources/
+
+TEMP_DIR = .temp/
+BUILD_DIR = build/
+SRC_DIR = src/
+BIN_DIR = $(BUILD_DIR)bin/
+TEST_DIR = test/
+TEST_BIN_DIR = $(BUILD_DIR)bintest/
+RES_DIR = ressources/
 ##############################################
 
 ############ EXECUTION PARAMETERS ############
 .DEFAULT_GOAL = help
 .PHONY = help install run test zip clean mrproper
 
-VPATH = $(SRCDIR) $(TESTDIR) $(BINDIR)
+VPATH = $(SRC_DIR) $(TEST_DIR) $(BIN_DIR)
 ##############################################
 
 ################### Targets ##################
@@ -24,53 +28,57 @@ help :	## Show this help
 	@grep -E '(^[a-zA-Z_-]+ :.*?##.*$$)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf " >> \033[32m%-20s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'
 
 
-SRC = $(wildcard $(SRCDIR)*.c)
-SRC = $(wildcard $(SRCDIR)*/*.c) # Recherche dans les sous dossier (pas de meilleur moyen trouver)
-SRC_OBJ = $(addprefix $(TEMPDIR), $(subst .c,.o, $(notdir $(SRC))))
+SRC = $(subst $(SRC_DIR)$(INPUT),, $(wildcard $(SRC_DIR)*.c))
+SRC_OBJ = $(addprefix $(TEMP_DIR), $(subst .c,.o, $(notdir $(SRC))))
 
 # Compile tout les fichier necessaire pour l'execution de l'application
-2048 : $(BINDIR) $(SRC_OBJ) ## Compile all files
-	@gcc -o $(BINDIR)$(NAME) $(SRCDIR)$(INPUT_FILE) #$(SRC_OBJ) currently useless in our case
+2048 : $(BIN_DIR) $(SRC_OBJ) ## Compile all files
+	@gcc $(CFLAGS) -o $(BIN_DIR)$(NAME) $(SRC_DIR)$(INPUT) $(SRC_OBJ)
 
 # Compilation générique
-$(TEMPDIR)%.o : %.c	$(TEMPDIR)
+$(TEMP_DIR)%.o : %.c $(TEMP_DIR)
 	@echo "\033[33m Compiling \033[36m $< \033[0m \033[33m... \033[0m"
-	@gcc -o $@ -c $<
+	@gcc $(CFLAGS) -o $@ -c $<
 
 # Creation du dossier temporaire
-$(TEMPDIR) :
+$(TEMP_DIR) :
 	@echo "\033[33m Creating temprary directory : $@ \033[0m"
 	@mkdir -p $@
 
-$(BINDIR) :
+# Creation du dossier binaire
+$(BIN_DIR) : $(BUILD_DIR)	
 	@echo "\033[33m Creating binaries directory : $@ \033[0m"
+	@mkdir -p $@
+
+# Creation du dossier build
+$(BUILD_DIR) :	
+	@echo "\033[33m Creating build directory : $@ \033[0m"
 	@mkdir -p $@
 
 
 # Install et compile tout les fichier necessaire pour l'execution de l'application
-install : 2048 $(BINDIR) ## Install and update app
+install : 2048 $(BIN_DIR) ## Install and update app
 	@echo "\033[33m Copying ressource files ... \033[0m"
-	@cp -r $(SRCDIR)$(RESDIR) $(BINDIR)
+	@cp -r $(SRC_DIR)$(RES_DIR) $(BIN_DIR)
 
 
 run : install ## Run and update app
-	@./$(BINDIR)$(NAME)
+	@(cd $(BIN_DIR) && ./$(NAME))
 
 
-TEST ?= $(wildcard $(TESTDIR)*Test.c)
-TEST_OBJ = $(addprefix $(TEMPDIR),$(subst .c,.o, $(notdir $(TEST)) ))
-TEST_EXEC = $(addprefix $(BINDIR)$(TESTDIR),$(subst .c,.out, $(notdir $(TEST))))
+TEST ?= $(wildcard $(TEST_DIR)*Test.c)
+TEST_EXEC = $(addprefix $(TEST_BIN_DIR),$(subst .c,.out, $(notdir $(TEST))))
 
 # Execute un code de test
 test : $(TEST_EXEC) ## run all tests selected. Select a test by typing make test TEST=<testName>
-	@for i in $(BINDIR)$(TESTDIR)*; do $$i; done
+	@for i in $(notdir $(TEST_EXEC)); do (cd $(TEST_BIN_DIR) && ./$$i); done
 
 # Create and run tests 
-$(BINDIR)$(TESTDIR)%.out : $(TEMPDIR)%.o $(BINDIR)$(TESTDIR)
-	@gcc -o $@ $<
+$(TEST_BIN_DIR)%.out : $(TEMP_DIR)%.o $(TEST_BIN_DIR) $(SRC_OBJ)
+	@gcc -o $@ $< $(SRC_OBJ) -g
 
 # Create directory for tests binaries
-$(BINDIR)$(TESTDIR) : $(BINDIR)	
+$(TEST_BIN_DIR) : $(BUILD_DIR)	
 	@echo "\033[33m Creating binaries test directory : $@ \033[0m"
 	@mkdir -p $@
 	
@@ -78,19 +86,19 @@ $(BINDIR)$(TESTDIR) : $(BINDIR)
 # Creer un ficher compresser contenant le projet
 zip : ## Compress folder as zip
 	@echo "\033[33m Compressing folder ... \033[0m"
-	@zip -r "Projet-Finale-"`date +%Y-%m-%d-%H-%M-%S` Makefile $(SRCDIR) $(BINDIR) $(TESTDIR) "Planificateur de projet.xlsx" "Compte Rendu.docx" Readme.md TODO.txt
+	@zip -r "Projet-Finale-"`date +%Y-%m-%d-%H-%M-%S` Makefile $(SRC_DIR) $(BUILD_DIR) $(TEST_DIR) "Planificateur de projet.xlsx" "Compte Rendu.docx" Readme.md TODO.txt
 
 
 # Efface le dossier temporaire
 clean : ## Clean temprary file and binary test
 	@echo "\033[33m Cleaning temporary files and binaries tests \033[0m"
-	@rm -rf $(TEMPDIR)
-	@rm -rf $(TESTDIR)$(BINDIR)
+	@rm -rf $(TEMP_DIR)
+	@rm -rf $(TEST_BIN_DIR)
 
 
 # Efface tout les fichie temporaire et compilé
 mrproper : clean ## Clean all files created and set the folder as it was at the beginning.
 	@echo "\033[33m Full Cleaning \033[0m"
-	@rm -rf $(BINDIR)
+	@rm -rf $(BUILD_DIR)
 
 ##############################################

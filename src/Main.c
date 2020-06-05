@@ -1,19 +1,8 @@
-#include <stdio.h>
-#include <string.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
-#include <SDL2/SDL_ttf.h>
-#include <SDL2/SDL_mixer.h>
 
 
+#include "headers/Main.h"
+//#include "drawgrid.c"
 
-#define WINDOW_LARGEUR 640
-#define WINDOW_HAUTEUR 680
-
-void SDL_EXITWITHERROR (const char *message);
-
-#include "option.c"
-#include "drawgrid.c"
 
 int main ()
 {
@@ -67,7 +56,7 @@ int main ()
         return -1;
     }
     //pointeur volume , empeche reinitialisation a chaque fois
-    int volume = 50;
+    int volume = 10;
     int *pointeurVolume = NULL;
     pointeurVolume = &volume;
     /*****************loading the TITLE font********************/
@@ -338,9 +327,9 @@ while (programRUNNIG)
                         (event.button.y > playButtonRect.y))
                         {
                             int playTrueFalse = 1;
-                            playTrueFalse = drawGrid(&raid, &green, &blue, titleFONT, renderer, window);
-                            if (playTrueFalse == 0)
-                                programRUNNIG = SDL_FALSE;
+                            playTrueFalse = game(&raid, &green, &blue, titleFONT, renderer, window);
+                            //if (playTrueFalse == 0)
+                               // programRUNNIG = SDL_FALSE;
                         }
 
 
