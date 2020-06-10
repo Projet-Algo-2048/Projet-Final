@@ -11,21 +11,29 @@
  */
 int game(/* -> parameter to initialize game <- */) {
 
-    /* initialisation of the game */
+    //============== initialisation of the game ==============
     GameState state;
     state.size = 4;
-    state.board = malloc(state.size * sizeof(Box * [state.size])); //difference with Box * (*temp)[] = malloc(sizeof(Box *[size][size])) ?
-    for (int i = 0; i < state.size; i++) state.board[i] = malloc(state.size * sizeof(Box*));
+
+    state.board = malloc(state.size * sizeof(Box **));
+	for (int i = 0; i < state.size; i++) {
+		state.board[i] = malloc(state.size * sizeof(Box*));
+		for (int j = 0; j < state.size; j++) state.board[i][j] = NULL;
+	}
+
     srand(time(NULL));
     generateNewBox(state.board, state.size);
 
-    /* Course of the game */
+    //================== Course of the game ===================
+		// Main Loop
 	while (true) {
-        generateNewBox(state.board, state.size);
+		generateNewBox(state.board, state.size);
         printBoard(state.board, state.size);
 
-        if (!canMove(state.board, state.size)) break;
+        if (!canMove(state.board, state.size)) break;	// Check if game is over
 
+			// Ask for movement
+		/*
         int moves = 0;
         do {
             int c;
@@ -41,10 +49,30 @@ int game(/* -> parameter to initialize game <- */) {
             }
             if (moves == 0) printf("2Can not move like that %c\n", c);
         } while (moves == 0);
+		*/
+
+		int moves;
+		do {
+			moves = -1;
+			int c;
+			printf("Bouger le plateau : ");
+			scanf("%d", &c);
+
+			switch (c) {
+				case 4: moves = slide(LEFT, state.board, state.size); break;
+				case 6: moves = slide(RIGHT, state.board, state.size); break;
+				case 8: moves = slide(UP, state.board, state.size); break;
+				case 2: moves = slide(DOWN, state.board, state.size); break;
+				default: printf("Not a valid key. Please use : 2 (Down), 6 (Right), 8 (Up) or 4 (Left) \n");
+			}
+
+			if (moves == 0) printf("Can not move like that %c\n", c);	
+		} while (moves <= 0);
 	}
+		//End of the Game
 	printf("Game Over ! \n");
 
-    /* freeing memory */
+    //================ freeing memory ===================
     for (int i = 0; i < state.size; i++) {
         for (int j = 0; j < state.size; j++) if (state.board[i][j] != NULL) free(state.board[i][j]);
         free(state.board[i]);
@@ -110,9 +138,9 @@ int printBoard(Box * ** board, int size) {
 bool canMove(Box * ** board, int size) {
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
-            if (board[i][j] == NULL) return true;
-            if (j != size - 1 && board[i][j] != NULL && board[i][j + 1] != NULL && board[i][j]->value == board[i][j + 1]->value) return true;
-            if (i != size - 1 && board[i][j] != NULL && board[i + 1][j] != NULL && board[i][j]->value == board[i + 1][j]->value) return true;
+            if (board[i][j] == NULL) return true;	//found an empty box 
+            if (j != size - 1 && board[i][j] != NULL && board[i][j + 1] != NULL && board[i][j]->value == board[i][j + 1]->value) return true;	//find 2 box on same line or columnn with the same value
+            if (i != size - 1 && board[i][j] != NULL && board[i + 1][j] != NULL && board[i][j]->value == board[i + 1][j]->value) return true;	//find 2 box on same line or columnn with the same value
         }
     }
     return false;
@@ -214,7 +242,7 @@ int slide(Directions dir, Box * ** board, int size) {
 		}
 		break;
 
-	default: printf("[Error] An error occured >> Direction for sliding unknown.\n Please contact developpers. \n"); exit(EXIT_FAILURE); break;
+	default: printf("[Error]<SLIDE> : Direction for sliding unknown.\n Please contact developpers. \n"); exit(EXIT_FAILURE); break;
 	}
 
 	return move;
