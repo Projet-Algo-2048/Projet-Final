@@ -1,5 +1,6 @@
 ################# VARIABLE ###################
 NAME = 2048
+INPUT_FILE = Main.c
 
 TEMP_DIR = .temp/
 BUILD_DIR = build/
@@ -25,17 +26,17 @@ help :	## Show this help
 	@grep -E '(^[a-zA-Z_-]+ :.*?##.*$$)' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf " >> \033[32m%-20s\033[0m %s\n", $$1, $$2}' | sed -e 's/\[32m##/[33m/'
 
 
-SRC = $(wildcard $(SRC_DIR)*.c)
+SRC = $(subst $(SRC_DIR)$(INPUT_FILE),, $(wildcard $(SRC_DIR)*.c))
 SRC_OBJ = $(addprefix $(TEMP_DIR), $(subst .c,.o, $(notdir $(SRC))))
 
 # Compile tout les fichier necessaire pour l'execution de l'application
 2048 : $(BIN_DIR) $(SRC_OBJ) ## Compile all files
-	@gcc -o $(BIN_DIR)$(NAME) $(SRC_OBJ)
+	@gcc -o $(BIN_DIR)$(NAME) $(SRC_DIR)$(INPUT_FILE) $(SRC_OBJ)
 
-# Compilation générique
+# Compilation gï¿½nï¿½rique
 $(TEMP_DIR)%.o : %.c $(TEMP_DIR)
 	@echo "\033[33m Compiling \033[36m $< \033[0m \033[33m... \033[0m"
-	@gcc -o $@ -c $<
+	@gcc -o $@ -c $< -g
 
 # Creation du dossier temporaire
 $(TEMP_DIR) :
@@ -68,11 +69,11 @@ TEST_EXEC = $(addprefix $(TEST_BIN_DIR),$(subst .c,.out, $(notdir $(TEST))))
 
 # Execute un code de test
 test : $(TEST_EXEC) ## run all tests selected. Select a test by typing make test TEST=<testName>
-	@for i in $(TEST_EXEC); do $$i; done
+	@for i in $(notdir $(TEST_EXEC)); do (cd $(TEST_BIN_DIR) && ./$$i); done
 
 # Create and run tests 
 $(TEST_BIN_DIR)%.out : $(TEMP_DIR)%.o $(TEST_BIN_DIR) $(SRC_OBJ)
-	@gcc -o $@ $< $(SRC_OBJ) -nostartfiles
+	@gcc -o $@ $< $(SRC_OBJ) -g
 
 # Create directory for tests binaries
 $(TEST_BIN_DIR) : $(BUILD_DIR)	
@@ -93,7 +94,7 @@ clean : ## Clean temprary file and binary test
 	@rm -rf $(TEST_BIN_DIR)
 
 
-# Efface tout les fichie temporaire et compilé
+# Efface tout les fichie temporaire et compilï¿½
 mrproper : clean ## Clean all files created and set the folder as it was at the beginning.
 	@echo "\033[33m Full Cleaning \033[0m"
 	@rm -rf $(BUILD_DIR)
