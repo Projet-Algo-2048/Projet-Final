@@ -5,6 +5,7 @@
 
 #include "GameStructs.h"
 #include "Utils.h"
+#include "AI.h"
 
 #ifndef Game
 #define Game

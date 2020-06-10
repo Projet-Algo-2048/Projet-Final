@@ -1,2 +1,4 @@
 function to allocate board / free
 atexit()
+
+AI: Level 2 not same propability when score are equal

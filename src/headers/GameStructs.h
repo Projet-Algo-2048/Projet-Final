@@ -6,6 +6,8 @@
 #ifndef GameStructs
 #define GameStructs
 
+#include <stdbool.h>
+
 /**
  * @enum Directions
  * @brief represente a direction
@@ -26,14 +28,17 @@ typedef struct {
     int value;                          /*< the score of the box*/
 } Box;
 
+typedef Box*** Board;
+
 /**
  * @struct GameState
  * @brief represente a the game state.
  * It gather all information about the game into one struct
  */
-typedef struct {
-    int size;                           /*< size of the board*/
-    Box*** board;                       /*< the game board */
-} GameState;
+typedef struct gameState GameState;
+struct gameState{
+    int size;                           /*< size of the board */
+    Board board;                       /*< the game board */
+};
 
 #endif

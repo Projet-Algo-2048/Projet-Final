@@ -14,18 +14,23 @@ int game(/* -> parameter to initialize game <- */) {
     /* initialisation of the game */
     GameState state;
     state.size = 4;
-    state.board = malloc(state.size * sizeof(Box * [state.size])); //difference with Box * (*temp)[] = malloc(sizeof(Box *[size][size])) ?
-    for (int i = 0; i < state.size; i++) state.board[i] = malloc(state.size * sizeof(Box*));
+    state.board = malloc(state.size * sizeof(Box **)); //difference with Box * (*temp)[] = malloc(sizeof(Box *[size][size])) ?
+	for (int i = 0; i < state.size; i++) {
+		state.board[i] = malloc(state.size * sizeof(Box*));
+		for (int j = 0; j < state.size; j++) state.board[i][j] = NULL;
+	}
+
     srand(time(NULL));
     generateNewBox(state.board, state.size);
 
     /* Course of the game */
 	while (true) {
-        generateNewBox(state.board, state.size);
+        Box * box = generateNewBox(state.board, state.size);
         printBoard(state.board, state.size);
-
         if (!canMove(state.board, state.size)) break;
 
+		AILevel3(state.board, state.size, 0);
+		/*
         int moves = 0;
         do {
             int c;
@@ -41,6 +46,7 @@ int game(/* -> parameter to initialize game <- */) {
             }
             if (moves == 0) printf("2Can not move like that %c\n", c);
         } while (moves == 0);
+		*/
 	}
 	printf("Game Over ! \n");
 
@@ -59,8 +65,25 @@ int game(/* -> parameter to initialize game <- */) {
  * @param board 2D array 
  * @return the box generated
  */
-Box * generateNewBox(Box * **board, int size) {
-    Box * box = (Box *) malloc( sizeof(Box) );
+Box * generateNewBox(Box *** board, int size) {
+	Box*** emptyBoxes = malloc(size * size * sizeof(Box**));
+	for (int i = 0; i < size * size; i++) emptyBoxes[i] = NULL;
+
+	int k = 0;
+	for (int i = 0; i < size; i++) {
+		for (int j = 0; j < size; j++) {
+			if (board[i][j] == NULL) emptyBoxes[k++] = &(board[i][j]);
+		}
+	}
+
+	int index = (k == 0) ? 0 : rand() % k;
+
+	Box* box = (Box*)malloc(sizeof(Box));
+	box->value = power(2, (rand() % 2) + 1);
+
+	return *(emptyBoxes[index]) = box;
+	/*
+    Box * box = malloc( sizeof(Box) );
     if (box == NULL) {
         printf("[ERROR] An error occured >> Could not allocate memory for new Box !");
         exit(EXIT_FAILURE);
@@ -70,7 +93,7 @@ Box * generateNewBox(Box * **board, int size) {
     i = rand() % 4;
     j = rand() % 4;
 
-    box->value = pow(2, (rand() % 2) + 1);
+    box->value = power(2, (rand() % 2) + 1);
 
     if (board[i][j] == NULL) {
         board[i][j] = box;
@@ -79,17 +102,16 @@ Box * generateNewBox(Box * **board, int size) {
     }
     else {
         free(box);
-        generateNewBox(board, size);
+        return generateNewBox(board, size);
     }
-
-    return box;
+	*/
 }
 
 /**
  * @fn int printBoard(Box*** board, int size)
  * @brief just a debug function that print the board
  */
-int printBoard(Box * ** board, int size) {
+int printBoard(Box *** board, int size) {
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
             (board[i][j] == NULL) ? printf("   |") : printf(" %d |", board[i][j]->value);
@@ -107,7 +129,7 @@ int printBoard(Box * ** board, int size) {
  * @param the size of the game board
  * @return true if a move is possible false otherwise
  */
-bool canMove(Box * ** board, int size) {
+bool canMove(Box *** board, int size) {
     for (int i = 0; i < size; i++) {
         for (int j = 0; j < size; j++) {
             if (board[i][j] == NULL) return true;
@@ -126,7 +148,7 @@ bool canMove(Box * ** board, int size) {
  * @param size of the game board
  * @return the number of move made
  */
-int slide(Directions dir, Box * ** board, int size) {
+int slide(Directions dir, Box *** board, int size) {
 
 	int move = 0;
 	switch (dir) {
