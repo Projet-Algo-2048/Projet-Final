@@ -1,5 +1,5 @@
 /**
- * @file GameStruct.c 
+ * @file GameStruct.c
  * @brief This file will contain all structure need to the basic game
  */
 
@@ -33,7 +33,8 @@ typedef struct {
  */
 typedef struct {
     int size;                           /*< size of the board*/
-    Box*** board;                       /*< the game board */
+    Box*** board1;
+    Box*** board2;                     /*< the game board */
 } GameState;
 
 #endif
