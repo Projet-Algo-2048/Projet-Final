@@ -23,6 +23,7 @@
 int slide(Directions, Box * **, int);
 bool canMove(Box * **, int);
 int printBoard(Box * **, int , SDL_Rect , SDL_Rect , SDL_Renderer *);
+int printBoardDebug (Box * **, int );
 Box * generateNewBox(Box * ** , int );
 int game(int *, int *, int *, TTF_Font *, SDL_Renderer *, SDL_Window *);
 

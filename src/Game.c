@@ -13,8 +13,9 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
 
    //reset the screen
    SDL_RenderClear(renderer);
-   printf("test\n");
+	 
 
+	 //const Uint8 redBG = (const Uint8)red;
 	
    //creation of the main rectangle
 	SDL_Rect rectangle;
@@ -25,12 +26,15 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
 
 	//creation of the number's color rectangle
 	SDL_Rect chiffreRect;
-   
+
     /* initialisation of the game */
     GameState state;
     state.size = 4;
-    state.board = malloc(state.size * sizeof(Box * [state.size])); //difference with Box * (*temp)[] = malloc(sizeof(Box *[size][size])) ?
-    for (int i = 0; i < state.size; i++) state.board[i] = malloc(state.size * sizeof(Box*));
+    state.board = malloc(state.size * sizeof(Box **)); //difference with Box * (*temp)[] = malloc(sizeof(Box *[size][size])) ?
+	for (int i = 0; i < state.size; i++) {
+		state.board[i] = malloc(state.size * sizeof(Box*));
+		for (int j = 0; j < state.size; j++) state.board[i][j] = NULL;
+	}
     srand(time(NULL));
     generateNewBox(state.board, state.size);
 
@@ -41,8 +45,16 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
 	
 	
 		while (playing) {
+			SDL_RenderClear(renderer);
         	generateNewBox(state.board, state.size);
-        	printBoard(state.board, state.size, chiffreRect, rectangle, renderer );
+			printBoardDebug(state.board, state.size);
+        	SDL_SetRenderDrawColor(renderer, 44, 44, 44, 255);
+			SDL_RenderFillRect(renderer, &rectangle);
+			printBoard(state.board, state.size, chiffreRect, rectangle, renderer );
+			SDL_SetRenderDrawColor(renderer, *red, *green, *blue, 0);
+
+			SDL_RenderPresent(renderer);
+			
 
         	if (!canMove(state.board, state.size)) break;
 
@@ -89,11 +101,11 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
 			//draw the image to the window
 			SDL_SetRenderDrawColor(renderer, 44, 44, 44, 255);
 			SDL_RenderFillRect(renderer, &rectangle);
-			//printBoard(state.board, state.size, chiffreRect, rectangle, renderer );
+			printBoard(state.board, state.size, chiffreRect, rectangle, renderer );
 			SDL_SetRenderDrawColor(renderer, *red, *green, *blue, 0);
 
 			SDL_RenderPresent(renderer);
-			printf("test\n");
+			//printf("test\n");
 
 		}
 		printf("Game Over ! \n");
@@ -116,7 +128,25 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
  * @param board 2D array 
  * @return the box generated
  */
+
 Box * generateNewBox(Box * **board, int size) {
+	Box*** emptyBoxes = malloc(size * size * sizeof(Box**));
+	for (int i = 0; i < size * size; i++) emptyBoxes[i] = NULL;
+
+	int k = 0;
+	for (int i = 0; i < size; i++) {
+		for (int j = 0; j < size; j++) {
+			if (board[i][j] == NULL) emptyBoxes[k++] = &(board[i][j]);
+		}
+	}
+
+	int index = (k == 0) ? 0 : rand() % k;
+
+	Box* box = (Box*)malloc(sizeof(Box));
+	box->value = power(2, (rand() % 2) + 1);
+
+	return *(emptyBoxes[index]) = box;
+/*
     Box * box = (Box *) malloc( sizeof(Box) );
     if (box == NULL) {
         printf("[ERROR] An error occured >> Could not allocate memory for new Box !");
@@ -140,6 +170,7 @@ Box * generateNewBox(Box * **board, int size) {
     }
 
     return box;
+	*/
 }
 
 /**
@@ -160,42 +191,41 @@ int printBoardDebug (Box * ** board, int size) {
 }
 
 
-int printBoard (Box * ** board, int size, SDL_Rect chiffreRect, SDL_Rect rectangle, SDL_Renderer *renderer)
- {
-    Uint8 r, g, b, a;
+int printBoard (Box * ** board, int size, SDL_Rect chiffreRect, SDL_Rect rectangle, SDL_Renderer *renderer){
+	Uint8 r, g, b, a;
 	printf("du biff\n");
 	//printBoardDebug(board, size);
-    for (int y=0; y<size; y++) 
-        {
-            for (int x=0; x<size; x++)
-                {
-                //the rectangle s color depend of the number value   
-				if (board[y][x]==NULL){r=150;g=150;b=150;a=150;}   
-				else if (board[y][x]->value==2){r=200;g=200;b=200;a=150;}
-				else if (board[y][x]->value==4){r=150;g=150;b=150;a=150;}
-				else if (board[y][x]->value==8){r=100;g=100;b=100;a=150;}
-				else if (board[y][x]->value==16){r=250;g=0;b=0;a=150;}
-				else if (board[y][x]->value==32){r=200;g=0;b=0;a=150;}
- 				else if (board[y][x]->value==64){r=100;g=0;b=0;a=150;}
-            	else if (board[y][x]->value==128){r=250;g=250;b=0;a=150;}
-            	else if (board[y][x]->value==256){r=200;g=200;b=0;a=150;}
-				else if (board[y][x]->value==512){r=100;g=100;b=0;a=150;}
-				else if (board[y][x]->value==1024){r=0;g=100;b=0;a=150;}
-				else if (board[y][x]->value==2048){r=0;g=200;b=0;a=150;}
-				
-                    
-                    chiffreRect.w = BLOCK_WIDTH;
-					chiffreRect.h = BLOCK_HEIGH;
-					chiffreRect.x = rectangle.x + chiffreRect.w * x + 20 * (x+1);
-					chiffreRect.y = rectangle.y + chiffreRect.h *y + 20* (y+1);
-					SDL_SetRenderDrawColor(renderer, r, g, b, a);
-					SDL_RenderFillRect(renderer, &chiffreRect);
+    for (int y=0; y<size; y++) {
+		for (int x=0; x<size; x++){
+			//the rectangle s color depend of the number value   
+			if ( board[y][x] == NULL ) { r = 150; g = 150; b = 150; a = 150; }  
+			else {
+				switch (board[y][x]->value) {
+					case 2: r = 200; g = 200; b = 200; a = 150; break;
+					case 4: r = 150; g = 150; b = 150; a = 150; break;
+					case 8: r = 100; g = 100; b = 100; a = 150; break;
+					case 16: r = 250; g = 0; b = 0; a = 150; break;
+					case 32: r = 200; g = 0; b = 0; a = 150; break;
+					case 64: r = 100; g = 0; b = 0; a = 150; break;
+					case 128: r = 250; g = 250; b = 0; a = 150; break;
+					case 256: r = 200; g = 200; b = 0; a = 150; break;
+					case 512: r = 100; g = 100; b = 0; a = 150; break;
+					case 1024: r = 0; g = 100; b = 0; a = 150; break;
+					case 2048: r = 0; g = 200; b = 0; a = 150; break;
+					default: r = 250; g = 250; b = 250; a = 150;
+				}
+			}  
+
+            chiffreRect.w = BLOCK_WIDTH;
+			chiffreRect.h = BLOCK_HEIGH;
+			chiffreRect.x = rectangle.x + chiffreRect.w * x + 20 * (x+1);
+			chiffreRect.y = rectangle.y + chiffreRect.h * y + 20 * (y+1);
+			SDL_SetRenderDrawColor(renderer, r, g, b, a);
+			SDL_RenderFillRect(renderer, &chiffreRect);
 					
-                    
-                }
-            
         }
-		return 0;
+    }
+	return 0;
  }
 
 
