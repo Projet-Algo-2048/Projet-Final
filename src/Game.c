@@ -12,7 +12,7 @@
 int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *renderer, SDL_Window *window) {
 
    //reset the screen
-   SDL_RenderClear(renderer);
+   //SDL_RenderClear(renderer);
 	 
 
 	 //const Uint8 redBG = (const Uint8)red;
@@ -25,7 +25,25 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
 	rectangle.h = RECTANGLE_HIGH;
 
 	//creation of the number's color rectangle
-	SDL_Rect chiffreRect;
+	SDL_Rect caseRect;
+
+	//loading a dedicated texture for the numbers value
+	SDL_Color white = {255, 255, 255, 0};
+	int fontSize = 50;
+    font = TTF_OpenFont("ressources/SDL/font/Gameplay.ttf",fontSize);
+	char CaseNumber [10] = "0";
+	SDL_Surface *numberSurface = TTF_RenderText_Solid(font, CaseNumber,white);
+	if (!numberSurface)
+        SDL_EXITWITHERROR("creation number surface");
+	SDL_Texture *numberTexture = SDL_CreateTextureFromSurface(renderer, numberSurface);
+	if (!numberTexture)
+        SDL_EXITWITHERROR("creation number texture");
+	SDL_Rect numberRect;
+	SDL_QueryTexture(numberTexture, NULL, NULL, &numberRect.w, &numberRect.h);
+
+
+
+
 
     /* initialisation of the game */
     GameState state;
@@ -45,12 +63,16 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
 	
 	
 		while (playing) {
-			SDL_RenderClear(renderer);
         	generateNewBox(state.board, state.size);
+
 			printBoardDebug(state.board, state.size);
-        	SDL_SetRenderDrawColor(renderer, 44, 44, 44, 255);
+        	
+			SDL_RenderClear(renderer);
+
+			//draw the image to the window
+			SDL_SetRenderDrawColor(renderer, 44, 44, 44, 255);
 			SDL_RenderFillRect(renderer, &rectangle);
-			printBoard(state.board, state.size, chiffreRect, rectangle, renderer );
+			printBoard(white, numberRect, font, CaseNumber,numberSurface, numberTexture, state.board, state.size, caseRect, rectangle, renderer );
 			SDL_SetRenderDrawColor(renderer, *red, *green, *blue, 0);
 
 			SDL_RenderPresent(renderer);
@@ -96,15 +118,7 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
         	} while (moves == 0);
 
 			//clear the screen
-			SDL_RenderClear(renderer);
-
-			//draw the image to the window
-			SDL_SetRenderDrawColor(renderer, 44, 44, 44, 255);
-			SDL_RenderFillRect(renderer, &rectangle);
-			printBoard(state.board, state.size, chiffreRect, rectangle, renderer );
-			SDL_SetRenderDrawColor(renderer, *red, *green, *blue, 0);
-
-			SDL_RenderPresent(renderer);
+			
 			//printf("test\n");
 
 		}
@@ -174,7 +188,7 @@ Box * generateNewBox(Box * **board, int size) {
 }
 
 /**
- * @fn int printBoard(Box*** board, int size, SDL_Rect chiffreRect, SDL_Rect rectangle, SDL_Renderer *renderer)
+ * @fn int printBoard(Box*** board, int size, SDL_Rect caseRect, SDL_Rect rectangle, SDL_Renderer *renderer)
  * @brief just a debug function that print the board
  */
 
@@ -191,18 +205,19 @@ int printBoardDebug (Box * ** board, int size) {
 }
 
 
-int printBoard (Box * ** board, int size, SDL_Rect chiffreRect, SDL_Rect rectangle, SDL_Renderer *renderer){
+int printBoard (SDL_Color white, SDL_Rect numberRect,TTF_Font *font, char* CaseNumber, SDL_Surface *numberSurface, SDL_Texture *numberTexture,  Box * ** board, int size, SDL_Rect caseRect, SDL_Rect rectangle, SDL_Renderer *renderer){
 	Uint8 r, g, b, a;
 	printf("du biff\n");
 	//printBoardDebug(board, size);
     for (int y=0; y<size; y++) {
 		for (int x=0; x<size; x++){
 			//the rectangle s color depend of the number value   
-			if ( board[y][x] == NULL ) { r = 150; g = 150; b = 150; a = 150; }  
+			if ( board[y][x] == NULL ) { r = 150; g = 150; b = 150; a = 150; sprintf(CaseNumber, " ");}  
 			else {
+				sprintf(CaseNumber, "%d", board[y][x]->value);
 				switch (board[y][x]->value) {
 					case 2: r = 200; g = 200; b = 200; a = 150; break;
-					case 4: r = 150; g = 150; b = 150; a = 150; break;
+					case 4: r = 0; g = 0; b = 0; a = 150; break;
 					case 8: r = 100; g = 100; b = 100; a = 150; break;
 					case 16: r = 250; g = 0; b = 0; a = 150; break;
 					case 32: r = 200; g = 0; b = 0; a = 150; break;
@@ -216,12 +231,17 @@ int printBoard (Box * ** board, int size, SDL_Rect chiffreRect, SDL_Rect rectang
 				}
 			}  
 
-            chiffreRect.w = BLOCK_WIDTH;
-			chiffreRect.h = BLOCK_HEIGH;
-			chiffreRect.x = rectangle.x + chiffreRect.w * x + 20 * (x+1);
-			chiffreRect.y = rectangle.y + chiffreRect.h * y + 20 * (y+1);
+            caseRect.w = BLOCK_WIDTH;
+			caseRect.h = BLOCK_HEIGH;
+			caseRect.x = rectangle.x + caseRect.w * x + 20 * (x+1);
+			caseRect.y = rectangle.y + caseRect.h * y + 20 * (y+1);
+			numberSurface = TTF_RenderText_Solid(font, CaseNumber, white);
+			numberTexture = SDL_CreateTextureFromSurface(renderer, numberSurface);
+			numberRect.x = caseRect.x + (BLOCK_WIDTH - numberRect.w) / 2;
+			numberRect.y = caseRect.y + (BLOCK_HEIGH - numberRect.h) / 2;
 			SDL_SetRenderDrawColor(renderer, r, g, b, a);
-			SDL_RenderFillRect(renderer, &chiffreRect);
+			SDL_RenderFillRect(renderer, &caseRect);
+			SDL_RenderCopy(renderer, numberTexture, NULL, &numberRect);
 					
         }
     }
