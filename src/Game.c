@@ -14,8 +14,13 @@ int game(/* -> parameter to initialize game <- */) {
     /* initialisation of the game */
     GameState state;
     state.size = 4;
-    state.board = malloc(state.size * sizeof(Box * [state.size])); //difference with Box * (*temp)[] = malloc(sizeof(Box *[size][size])) ?
-    for (int i = 0; i < state.size; i++) state.board[i] = malloc(state.size * sizeof(Box*));
+
+    state.board = malloc(state.size * sizeof(Box **)); 
+	for (int i = 0; i < state.size; i++) {
+		state.board[i] = malloc(state.size * sizeof(Box*));
+		for (int j = 0; j < state.size; j++) state.board[i][j] = NULL;
+	}
+
     srand(time(NULL));
     generateNewBox(state.board, state.size);
 

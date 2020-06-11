@@ -33,7 +33,7 @@ SRC_OBJ = $(addprefix $(TEMP_DIR), $(subst .c,.o, $(notdir $(SRC))))
 2048 : $(BIN_DIR) $(SRC_OBJ) ## Compile all files
 	@gcc -o $(BIN_DIR)$(NAME) $(SRC_DIR)$(INPUT_FILE) $(SRC_OBJ)
 
-# Compilation gï¿½nï¿½rique
+# Compilation générique
 $(TEMP_DIR)%.o : %.c $(TEMP_DIR)
 	@echo "\033[33m Compiling \033[36m $< \033[0m \033[33m... \033[0m"
 	@gcc -o $@ -c $< -g
@@ -58,6 +58,9 @@ $(BUILD_DIR) :
 install : 2048 $(BIN_DIR) ## Install and update app
 	@echo "\033[33m Copying ressource files ... \033[0m"
 	@cp -r $(SRC_DIR)$(RES_DIR) $(BIN_DIR)
+
+	@echo "\033[33m Making directory logs/ \033[0m"
+	@mkdir -p $(BIN_DIR)logs
 
 
 run : install ## Run and update app
@@ -94,7 +97,7 @@ clean : ## Clean temprary file and binary test
 	@rm -rf $(TEST_BIN_DIR)
 
 
-# Efface tout les fichie temporaire et compilï¿½
+# Efface tout les fichie temporaire et compilé
 mrproper : clean ## Clean all files created and set the folder as it was at the beginning.
 	@echo "\033[33m Full Cleaning \033[0m"
 	@rm -rf $(BUILD_DIR)
