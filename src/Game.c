@@ -81,7 +81,9 @@ Box * generateNewBox(Box *** board, int size) {
 	Box* box = (Box*)malloc(sizeof(Box));
 	box->value = power(2, (rand() % 2) + 1);
 
-	return *(emptyBoxes[index]) = box;
+	 (*(emptyBoxes[index])) = box;
+	 free(emptyBoxes);
+	 return box;
 	/*
     Box * box = malloc( sizeof(Box) );
     if (box == NULL) {

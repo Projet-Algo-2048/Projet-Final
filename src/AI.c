@@ -127,7 +127,7 @@ int AILevel2(GameState * state) {
 }
 */
 
-#define AIRecursionMax 3
+#define AIRecursionMax 2
 #define AILoopMax 10
 
 int AILevel3(Board board, int size, int recursion) {
