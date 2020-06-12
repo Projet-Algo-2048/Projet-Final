@@ -11,5 +11,7 @@
 #include "SdlVar.h"
 #include "Game.h"
 #include "option.h"
+#include "Language.h"
+#include "LinkedList.h"
 
 #endif

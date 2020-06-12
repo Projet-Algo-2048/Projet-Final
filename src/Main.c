@@ -7,6 +7,7 @@
 int main ()
 {
 
+
     /*********************INITIALISATION**********************/
 
     // initialisation of SDL
@@ -28,6 +29,12 @@ int main ()
             SDL_Quit();
             exit(EXIT_FAILURE);
         }
+
+
+    /****************LOADING OF THE DIFFERENTS LANGUGES**************/
+
+    loadLanguage(DEFAULT_LANG);
+    sleep(1);
 
 
     /******************************************************/
@@ -99,7 +106,10 @@ int main ()
     fontSIZE = 40;
     //titleFONT = NULL;
     titleFONT = TTF_OpenFont("ressources/SDL/font/Gameplay.ttf",fontSIZE);
-    SDL_Surface *playButtonSurface = TTF_RenderText_Solid(titleFONT, "Play", white);
+    printfTranslationList();
+    char test[20] = "";
+    strcpy(test, getTranslatedText("mainMenu.pl"));
+    SDL_Surface *playButtonSurface = TTF_RenderText_Solid(titleFONT, test, white);
     if (!playButtonSurface)
         {
             SDL_DestroyRenderer(renderer);
@@ -328,8 +338,8 @@ while (programRUNNIG)
                         {
                             int playTrueFalse = 1;
                             playTrueFalse = game(&raid, &green, &blue, titleFONT, renderer, window);
-                            //if (playTrueFalse == 0)
-                               // programRUNNIG = SDL_FALSE;
+                            if (playTrueFalse == 0)
+                                programRUNNIG = SDL_FALSE;
                         }
 
 

@@ -1,0 +1,11 @@
+Lang = American English
+# language translation file
+# How it work :
+# Each line must follow this pattern 'key = value'
+# The very first line must be 'Lang = <language>'
+mainMenu.pl = Play
+mainMenu.highScore = Highscore
+mainMenu.option = Options
+mainMenu.exit = exit
+
+

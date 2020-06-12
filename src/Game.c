@@ -110,6 +110,11 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
 												moves = slide(DOWN, state.board, state.size);
 											break;
 
+											case SDLK_ESCAPE:
+												playing = SDL_FALSE;
+												return 1;
+											break;
+
 										}
 								break;
 							}
