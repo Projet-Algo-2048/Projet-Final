@@ -1,7 +1,6 @@
 
 
 #include "headers/Main.h"
-#include "drawgrid.c"
 
 
 int main ()

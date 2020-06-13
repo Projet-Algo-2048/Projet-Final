@@ -305,7 +305,7 @@ dBlangueRect.y = langueRect.y + 5;
                                         gBSurface = TTF_RenderText_Solid(specialFont, "<", color1);
                                         gB = SDL_CreateTextureFromSurface(renderer, gBSurface);
                                     }
-                                    //case '>volume'
+                                //case '>langue'
                                 if ((mouse_x < dBlangueRect.x + dBlangueRect.w)&&
                                     (mouse_x > dBlangueRect.x) &&
                                     (mouse_y < dBlangueRect.y + dBlangueRect.h)&&
