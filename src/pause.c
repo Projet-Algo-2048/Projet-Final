@@ -120,6 +120,17 @@ int pauseMenu (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *re
                                     (pauseEvent.button.y > resumeRect.y))
                                         pauseRunning = SDL_FALSE;
 
+                            //go to home menu if click on home
+                            if ((pauseEvent.button.x < homeRect.x + homeRect.w)&&
+                                    (pauseEvent.button.x > homeRect.x) &&
+                                    (pauseEvent.button.y < homeRect.y + homeRect.h)&&
+                                    (pauseEvent.button.y > homeRect.y))
+                                        {
+                                            pauseRunning = SDL_FALSE;
+                                            return 2;
+                                        }
+                                        
+
                         }
                     
                 }
@@ -127,6 +138,7 @@ int pauseMenu (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *re
                 SDL_RenderClear(renderer);
 
                 //charge the textures into the renderer memory
+                
                 SDL_SetRenderDrawColor(renderer, *red, *green, *blue, 0);
                 SDL_RenderCopy(renderer, pauseTexture, NULL, &pauseRect);
                 SDL_RenderCopy(renderer, resumeTexture, NULL, &resumeRect);

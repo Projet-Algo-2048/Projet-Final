@@ -18,3 +18,9 @@ opMenu.or = or press 'esc'
 paMenu.pa = Pause
 paMenu.re = Resume
 paMenu.ho = Home
+
+chMenu.ch = choose gamemode
+chMenu.fo = 4x4 grid
+chMenu.ei = 8x8 grid
+chMenu.jj = player vs player
+chMenu.ji = player VS IA

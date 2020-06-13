@@ -120,6 +120,11 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
 														playing = SDL_FALSE;
 														return 0;
 													}
+												else if (truefalse == 2)
+													{
+														playing = SDL_FALSE;
+														return 1;
+													}
 												//recharge le visuel car sinon doit attendre mouvement
 												SDL_RenderClear(renderer);
 												SDL_SetRenderDrawColor(renderer, 44, 44, 44, 255);

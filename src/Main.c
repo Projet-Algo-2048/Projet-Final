@@ -335,7 +335,7 @@ while (programRUNNIG)
                         (event.button.y > playButtonRect.y))
                         {
                             int playTrueFalse = 1;
-                            playTrueFalse = game(&raid, &green, &blue, titleFONT, renderer, window);
+                            playTrueFalse = selectGame(&raid, &green, &blue, titleFONT, renderer, window);
                             if (playTrueFalse == 0)
                                 programRUNNIG = SDL_FALSE;
                         }
