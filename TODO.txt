@@ -1,2 +1,2 @@
-cross plateform SDL
+si language deja charge ne pas le charger une 2e fois
 

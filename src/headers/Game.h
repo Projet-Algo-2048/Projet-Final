@@ -10,6 +10,7 @@
 #include "GameStructs.h"
 #include "Utils.h"
 #include "SdlVar.h"
+#include "pause.h"
 
 #define NUMBER_OF_CASE 4
 #define RECTANGLE_WIDTH 540

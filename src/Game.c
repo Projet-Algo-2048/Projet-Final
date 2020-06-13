@@ -58,6 +58,7 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
 
 	SDL_bool playing = SDL_TRUE;
 	SDL_Event playEvent;
+	int truefalse = 1;
 
     /* Course of the game */
 	
@@ -111,8 +112,21 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
 											break;
 
 											case SDLK_ESCAPE:
-												playing = SDL_FALSE;
-												return 1;
+												//bool afin fermer completement prog ou non dependament du choix ds le sub menu pause
+												
+												truefalse = pauseMenu(red, green, blue, font, renderer, window);
+												if (truefalse == 0)
+													{
+														playing = SDL_FALSE;
+														return 0;
+													}
+												//recharge le visuel car sinon doit attendre mouvement
+												SDL_RenderClear(renderer);
+												SDL_SetRenderDrawColor(renderer, 44, 44, 44, 255);
+												SDL_RenderFillRect(renderer, &rectangle);
+												printBoard(white, numberRect, font, CaseNumber,numberSurface, numberTexture, state.board, state.size, caseRect, rectangle, renderer );
+												SDL_SetRenderDrawColor(renderer, *red, *green, *blue, 0);
+												SDL_RenderPresent(renderer);
 											break;
 
 										}
@@ -137,6 +151,8 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
     	free(state.board);
 		playing = SDL_FALSE;
 		return 1;
+
+		SDL_DestroyTexture(numberTexture);
 	
 }
 

@@ -34,7 +34,7 @@ int main ()
     /****************LOADING OF THE DIFFERENTS LANGUGES**************/
 
     loadLanguage(DEFAULT_LANG);
-    sleep(1);
+    
 
 
     /******************************************************/
@@ -107,9 +107,8 @@ int main ()
     //titleFONT = NULL;
     titleFONT = TTF_OpenFont("ressources/SDL/font/Gameplay.ttf",fontSIZE);
     printfTranslationList();
-    char test[20] = "";
-    strcpy(test, getTranslatedText("mainMenu.pl"));
-    SDL_Surface *playButtonSurface = TTF_RenderText_Solid(titleFONT, test, white);
+    
+    SDL_Surface *playButtonSurface = TTF_RenderText_Solid(titleFONT, getTranslatedText("mainMenu.pl"), white);
     if (!playButtonSurface)
         {
             SDL_DestroyRenderer(renderer);
@@ -131,7 +130,7 @@ int main ()
 
 
     /***************loading the "HIGHSCORE" font**************/
-    SDL_Surface *hsButtonSurface = TTF_RenderText_Solid(titleFONT, "Highscore", white);
+    SDL_Surface *hsButtonSurface = TTF_RenderText_Solid(titleFONT, getTranslatedText("mainMenu.hs"), white);
     if (!hsButtonSurface)
         {
             SDL_DestroyRenderer(renderer);
@@ -153,7 +152,7 @@ int main ()
 
 
 /***************loading the "OPTION" font**************/
-    SDL_Surface *optionButtonSurface = TTF_RenderText_Solid(titleFONT, "Options", white);
+    SDL_Surface *optionButtonSurface = TTF_RenderText_Solid(titleFONT, getTranslatedText("mainMenu.op"), white);
     if (!optionButtonSurface)
         {
             SDL_DestroyRenderer(renderer);
@@ -175,7 +174,7 @@ int main ()
 
 
     /***************loading the "EXIT" font**************/
-    SDL_Surface *exitButtonSurface = TTF_RenderText_Solid(titleFONT, "Exit", white);
+    SDL_Surface *exitButtonSurface = TTF_RenderText_Solid(titleFONT, getTranslatedText("mainMenu.ex"), white);
     if (!optionButtonSurface)
         {
             SDL_DestroyRenderer(renderer);
@@ -253,12 +252,12 @@ while (programRUNNIG)
                         (mouse_y < playButtonRect.y + playButtonRect.h)&&
                         (mouse_y > playButtonRect.y))
                         {
-                           playButtonSurface = TTF_RenderText_Solid(titleFONT, "Play", red);
+                           playButtonSurface = TTF_RenderText_Solid(titleFONT, getTranslatedText("mainMenu.pl"), red);
                            playButton = SDL_CreateTextureFromSurface(renderer, playButtonSurface);
                         }
                     else
                     {
-                        playButtonSurface = TTF_RenderText_Solid(titleFONT, "Play", white);
+                        playButtonSurface = TTF_RenderText_Solid(titleFONT, getTranslatedText("mainMenu.pl"), white);
                         playButton = SDL_CreateTextureFromSurface(renderer, playButtonSurface);
                     }
                     //case 'highscore'
@@ -267,12 +266,12 @@ while (programRUNNIG)
                         (mouse_y < hsButtonRect.y + hsButtonRect.h)&&
                         (mouse_y > hsButtonRect.y))
                         {
-                           hsButtonSurface = TTF_RenderText_Solid(titleFONT, "Highscore", red);
+                           hsButtonSurface = TTF_RenderText_Solid(titleFONT, getTranslatedText("mainMenu.hs"), red);
                            hsButton = SDL_CreateTextureFromSurface(renderer, hsButtonSurface);
                         }
                     else
                     {
-                        hsButtonSurface = TTF_RenderText_Solid(titleFONT, "Highscore", white);
+                        hsButtonSurface = TTF_RenderText_Solid(titleFONT, getTranslatedText("mainMenu.hs"), white);
                         hsButton = SDL_CreateTextureFromSurface(renderer, hsButtonSurface);
                     }
                     //case 'option'
@@ -281,12 +280,12 @@ while (programRUNNIG)
                         (mouse_y < optionButtonRect.y + optionButtonRect.h)&&
                         (mouse_y > optionButtonRect.y))
                         {
-                           optionButtonSurface = TTF_RenderText_Solid(titleFONT, "Options", red);
+                           optionButtonSurface = TTF_RenderText_Solid(titleFONT, getTranslatedText("mainMenu.op"), red);
                            optionButton = SDL_CreateTextureFromSurface(renderer, optionButtonSurface);
                         }
                     else
                     {
-                        optionButtonSurface = TTF_RenderText_Solid(titleFONT, "Options", white);
+                        optionButtonSurface = TTF_RenderText_Solid(titleFONT, getTranslatedText("mainMenu.op"), white);
                         optionButton = SDL_CreateTextureFromSurface(renderer, optionButtonSurface);
                     }
                     //case 'exit'
@@ -295,12 +294,12 @@ while (programRUNNIG)
                         (mouse_y < exitButtonRect.y + exitButtonRect.h)&&
                         (mouse_y > exitButtonRect.y))
                         {
-                           exitButtonSurface = TTF_RenderText_Solid(titleFONT, "exit", red);
+                           exitButtonSurface = TTF_RenderText_Solid(titleFONT, getTranslatedText("mainMenu.ex"), red);
                            exitButton = SDL_CreateTextureFromSurface(renderer, exitButtonSurface);
                         }
                     else
                     {
-                        exitButtonSurface = TTF_RenderText_Solid(titleFONT, "exit", white);
+                        exitButtonSurface = TTF_RenderText_Solid(titleFONT, getTranslatedText("mainMenu.ex"), white);
                         exitButton = SDL_CreateTextureFromSurface(renderer, exitButtonSurface);
                     }
                     break;

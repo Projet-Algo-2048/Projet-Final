@@ -1,20 +1,20 @@
-Lang = English
+Lang = Francais
 # language translation file 
 # How it work : 
 # Each line must follow this pattern 'key = value'
 # The very first line must be 'Lang = <language>'
 
-mainMenu.pl = Play
+mainMenu.pl = Jouer
 mainMenu.hs = Highscore
 mainMenu.op = Options
-mainMenu.ex = Exit
+mainMenu.ex = Quitter
 
 opMenu.title = Options
 opMenu.vol = Volume
 opMenu.th = Theme
-opMenu.re = Return
-opMenu.or = or press 'esc'
+opMenu.re = Retour
+opMenu.or = ou appuyer sur 'esc'
 
 paMenu.pa = Pause
-paMenu.re = Resume
-paMenu.ho = Home
+paMenu.re = Reprendre
+paMenu.ho = Menu

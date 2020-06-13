@@ -11,7 +11,7 @@ int optionMenu (int *numTheme, int *red, int *green, int *blue, int *volume, Mix
     /***************change size+pos of "OPTION" font**************/
     int fontSize = 100;
     font = TTF_OpenFont("ressources/SDL/font/Gameplay.ttf",fontSize);
-    optionButtonSurface = TTF_RenderText_Solid(font, "OPTIONS", color1);
+    optionButtonSurface = TTF_RenderText_Solid(font, getTranslatedText("opMenu.title"), color1);
     optionButton = SDL_CreateTextureFromSurface(renderer, optionButtonSurface);
     if (!optionButton)
         {
@@ -24,6 +24,23 @@ int optionMenu (int *numTheme, int *red, int *green, int *blue, int *volume, Mix
     SDL_QueryTexture(optionButton, NULL, NULL, &optionButtonRect.w, &optionButtonRect.h);
     optionButtonRect.x = (WINDOW_LARGEUR - optionButtonRect.w) / 2;
     optionButtonRect.y = 50;
+
+    /****************'volume'***************/
+    fontSize = 50;
+    font = NULL;
+    font = TTF_OpenFont("ressources/SDL/font/Gameplay.ttf",fontSize);
+    SDL_Surface *volWordSurface = TTF_RenderText_Solid(font, getTranslatedText("opMenu.vol"), color1);
+    if (!volWordSurface)
+        SDL_EXITWITHERROR("creation volWordSurface");
+    SDL_Texture *volWord = SDL_CreateTextureFromSurface(renderer, volWordSurface);
+    if (!volWord)
+        SDL_EXITWITHERROR("creation plusButton");
+    SDL_FreeSurface(volWordSurface);
+    SDL_Rect volWordRect;
+    SDL_QueryTexture(volWord, NULL, NULL, &volWordRect.w, &volWordRect.h );
+    volWordRect.x = (WINDOW_LARGEUR - volWordRect.w) / 2;
+    volWordRect.y = 200;    
+
 
     /******************music volume sound******************/
     fontSize = 70;
@@ -40,7 +57,7 @@ int optionMenu (int *numTheme, int *red, int *green, int *blue, int *volume, Mix
     SDL_Rect volumeTextureRect;
     SDL_QueryTexture(volumeTexture, NULL, NULL, &volumeTextureRect.w, &volumeTextureRect.h);
     volumeTextureRect.x = (WINDOW_LARGEUR - volumeTextureRect.w) / 2;
-    volumeTextureRect.y = 280;
+    volumeTextureRect.y = volWordRect.y + volWordRect.h + 20;
 
     /****************music param +/- font******************/
     // +
@@ -56,7 +73,7 @@ int optionMenu (int *numTheme, int *red, int *green, int *blue, int *volume, Mix
     SDL_Rect plusButtonRect;
     SDL_QueryTexture(plusButton, NULL, NULL, &plusButtonRect.w, &plusButtonRect.h );
     plusButtonRect.x = volumeTextureRect.x + volumeTextureRect.w +100;
-    plusButtonRect.y = 280;
+    plusButtonRect.y = volumeTextureRect.y;
 
     //-
     SDL_Surface *minusButtonSurface = TTF_RenderText_Solid(font,"-", color1);
@@ -68,28 +85,13 @@ int optionMenu (int *numTheme, int *red, int *green, int *blue, int *volume, Mix
     SDL_Rect minusButtonRect;
     SDL_QueryTexture(minusButton, NULL, NULL, &minusButtonRect.w, &minusButtonRect.h);
     minusButtonRect.x = volumeTextureRect.x - 100;
-    minusButtonRect.y = 280;
+    minusButtonRect.y = volumeTextureRect.y;
 
-    /****************'volume'***************/
-    fontSize = 50;
-    font = NULL;
-    font = TTF_OpenFont("ressources/SDL/font/Gameplay.ttf",fontSize);
-    SDL_Surface *volWordSurface = TTF_RenderText_Solid(font, "Volume", color1);
-    if (!volWordSurface)
-        SDL_EXITWITHERROR("creation volWordSurface");
-    SDL_Texture *volWord = SDL_CreateTextureFromSurface(renderer, volWordSurface);
-    if (!volWord)
-        SDL_EXITWITHERROR("creation plusButton");
-    SDL_FreeSurface(volWordSurface);
-    SDL_Rect volWordRect;
-    SDL_QueryTexture(volWord, NULL, NULL, &volWordRect.w, &volWordRect.h );
-    volWordRect.x = (WINDOW_LARGEUR - volWordRect.w) / 2;
-    volWordRect.y = 220;    
-
+    
     /***************theme indicator********/
     char themeTitle[50];
     //int numTheme = 1;
-    sprintf(themeTitle, "Theme %d", *numTheme);
+    sprintf(themeTitle,"%s %d",getTranslatedText("opMenu.th"), *numTheme);
     fontSize = 50;
     font = NULL;
     font = TTF_OpenFont("ressources/SDL/font/Gameplay.ttf",fontSize);
@@ -102,7 +104,7 @@ int optionMenu (int *numTheme, int *red, int *green, int *blue, int *volume, Mix
     SDL_Rect themeRect;
     SDL_QueryTexture(theme, NULL, NULL, &themeRect.w, &themeRect.h);
     themeRect.x = (WINDOW_LARGEUR - themeRect.w) / 2;
-    themeRect.y = volumeTextureRect.y + volumeTextureRect.h + 40;
+    themeRect.y = volumeTextureRect.y + volumeTextureRect.h + 10;
 
     /***************</>**************/
     fontSize = 50;
@@ -137,11 +139,42 @@ int optionMenu (int *numTheme, int *red, int *green, int *blue, int *volume, Mix
     dBRect.x = themeRect.x + themeRect.w + 100;
     dBRect.y = themeRect.y + 5 ;
 
+ /****************langue selector***********/
+ SDL_Surface *langueSurface = TTF_RenderText_Solid(font, getTranslatedText("Lang"), color1);
+ if (!langueSurface)
+    SDL_EXITWITHERROR("creation langueSurface");
+SDL_Texture *langueTexture = SDL_CreateTextureFromSurface(renderer, langueSurface);
+if (!langueTexture)
+    SDL_EXITWITHERROR("creation langueTexture");
+SDL_Rect langueRect;
+SDL_QueryTexture(langueTexture, NULL, NULL, &langueRect.w, &langueRect.h);
+langueRect.x = (WINDOW_LARGEUR - langueRect.w) / 2;
+langueRect.y = themeRect.y + themeRect.h +40;
+
+/********************</>langue*******************/
+//<
+SDL_Texture *gBlangue = SDL_CreateTextureFromSurface(renderer, gBSurface);
+    if (!gBlangue)
+        SDL_EXITWITHERROR("creation gBlangue");
+SDL_Rect gBlangueRect;
+SDL_QueryTexture(gBlangue, NULL, NULL, &gBlangueRect.w, &gBlangueRect.h);
+gBlangueRect.x = langueRect.x - 100;
+gBlangueRect.y = langueRect.y + 5;
+
+//<
+SDL_Texture *dBlangue = SDL_CreateTextureFromSurface(renderer, dBSurface);
+    if (!dBlangue)
+        SDL_EXITWITHERROR("creation dBlangue");
+SDL_Rect dBlangueRect;
+SDL_QueryTexture(dBlangue, NULL, NULL, &dBlangueRect.w, &dBlangueRect.h);
+dBlangueRect.x = langueRect.x +langueRect.w + 100;
+dBlangueRect.y = langueRect.y + 5;
+
 /****************'return'***************/
     fontSize = 50;
     font = NULL;
     font = TTF_OpenFont("ressources/SDL/font/Gameplay.ttf",fontSize);
-    SDL_Surface *returnSurface = TTF_RenderText_Solid(font, "Return", color1);
+    SDL_Surface *returnSurface = TTF_RenderText_Solid(font, getTranslatedText("opMenu.re"), color1);
     if (!returnSurface)
         SDL_EXITWITHERROR("creation returnSurface");
     SDL_Texture *returnButton = SDL_CreateTextureFromSurface(renderer, returnSurface);
@@ -151,13 +184,13 @@ int optionMenu (int *numTheme, int *red, int *green, int *blue, int *volume, Mix
     SDL_Rect returnButtonRect;
     SDL_QueryTexture(returnButton, NULL, NULL, &returnButtonRect.w, &returnButtonRect.h );
     returnButtonRect.x = (WINDOW_LARGEUR - returnButtonRect.w) / 2;
-    returnButtonRect.y = themeRect.y + themeRect.h + 40;
+    returnButtonRect.y = langueRect.y + langueRect.h + 40;
 
     /****************'or press esc'***************/
     fontSize = 20;
     font = NULL;
     font = TTF_OpenFont("ressources/SDL/font/Gameplay.ttf",fontSize);
-    SDL_Surface *escSurface = TTF_RenderText_Solid(font, "or press esc", color1);
+    SDL_Surface *escSurface = TTF_RenderText_Solid(font, getTranslatedText("opMenu.or"), color1);
     if (!escSurface)
         SDL_EXITWITHERROR("creation escSurface");
     SDL_Texture *esc = SDL_CreateTextureFromSurface(renderer, escSurface);
@@ -244,7 +277,7 @@ int optionMenu (int *numTheme, int *red, int *green, int *blue, int *volume, Mix
                                         plusButtonSurface = TTF_RenderText_Solid(font, "+", color1);
                                         plusButton = SDL_CreateTextureFromSurface(renderer, plusButtonSurface);
                                     }
-                                //case '>'
+                                //case '>volume'
                                 if ((mouse_x < dBRect.x + dBRect.w)&&
                                     (mouse_x > dBRect.x) &&
                                     (mouse_y < dBRect.y + dBRect.h)&&
@@ -258,7 +291,7 @@ int optionMenu (int *numTheme, int *red, int *green, int *blue, int *volume, Mix
                                         dBSurface = TTF_RenderText_Solid(specialFont, ">", color1);
                                         dB = SDL_CreateTextureFromSurface(renderer, dBSurface);
                                     }
-                                //case '<'
+                                //case '<volume'
                                 if ((mouse_x < gBRect.x + gBRect.w)&&
                                     (mouse_x > gBRect.x) &&
                                     (mouse_y < gBRect.y + gBRect.h)&&
@@ -272,18 +305,46 @@ int optionMenu (int *numTheme, int *red, int *green, int *blue, int *volume, Mix
                                         gBSurface = TTF_RenderText_Solid(specialFont, "<", color1);
                                         gB = SDL_CreateTextureFromSurface(renderer, gBSurface);
                                     }
+                                    //case '>volume'
+                                if ((mouse_x < dBlangueRect.x + dBlangueRect.w)&&
+                                    (mouse_x > dBlangueRect.x) &&
+                                    (mouse_y < dBlangueRect.y + dBlangueRect.h)&&
+                                    (mouse_y > dBlangueRect.y))
+                                    {
+                                        dBSurface = TTF_RenderText_Solid(specialFont, ">", color2);
+                                        dBlangue = SDL_CreateTextureFromSurface(renderer, dBSurface);
+                                    }
+                                    else
+                                    {
+                                        dBSurface = TTF_RenderText_Solid(specialFont, ">", color1);
+                                        dBlangue = SDL_CreateTextureFromSurface(renderer, dBSurface);
+                                    }
+                                //case '<langue'
+                                if ((mouse_x < gBlangueRect.x + gBlangueRect.w)&&
+                                    (mouse_x > gBlangueRect.x) &&
+                                    (mouse_y < gBlangueRect.y + gBlangueRect.h)&&
+                                    (mouse_y > gBlangueRect.y))
+                                    {
+                                        gBSurface = TTF_RenderText_Solid(specialFont, "<", color2);
+                                        gBlangue = SDL_CreateTextureFromSurface(renderer, gBSurface);
+                                    }
+                                    else
+                                    {
+                                        gBSurface = TTF_RenderText_Solid(specialFont, "<", color1);
+                                        gBlangue = SDL_CreateTextureFromSurface(renderer, gBSurface);
+                                    }
                                 //case 'return'
                                 if ((mouse_x < returnButtonRect.x + returnButtonRect.w)&&
                                     (mouse_x > returnButtonRect.x) &&
                                     (mouse_y < returnButtonRect.y + returnButtonRect.h)&&
                                     (mouse_y > returnButtonRect.y))
                                     {
-                                        returnSurface = TTF_RenderText_Solid(font, "return", color2);
+                                        returnSurface = TTF_RenderText_Solid(font, getTranslatedText("opMenu.re"), color2);
                                         returnButton = SDL_CreateTextureFromSurface(renderer, returnSurface);
                                     }
                                     else
                                     {
-                                        returnSurface = TTF_RenderText_Solid(font, "return", color1);
+                                        returnSurface = TTF_RenderText_Solid(font, getTranslatedText("opMenu.re"), color1);
                                         returnButton = SDL_CreateTextureFromSurface(renderer, returnSurface);
                                     }
                             break;
@@ -392,6 +453,9 @@ int optionMenu (int *numTheme, int *red, int *green, int *blue, int *volume, Mix
                 //draw the image to the window
                 SDL_SetRenderDrawColor(renderer, *red, *green, *blue, a);
                 SDL_RenderCopy(renderer, esc, NULL, &escRect);
+                SDL_RenderCopy(renderer, dBlangue, NULL, &dBlangueRect);
+                SDL_RenderCopy(renderer, gBlangue, NULL, &gBlangueRect);
+                SDL_RenderCopy(renderer, langueTexture, NULL, &langueRect);
                 SDL_RenderCopy(renderer, dB, NULL, &dBRect);
                 SDL_RenderCopy(renderer, returnButton, NULL, &returnButtonRect);
                 SDL_RenderCopy(renderer, gB, NULL, &gBRect);
@@ -407,6 +471,9 @@ int optionMenu (int *numTheme, int *red, int *green, int *blue, int *volume, Mix
 
 
     SDL_DestroyTexture(optionButton);
+    SDL_DestroyTexture(dBlangue);
+    SDL_DestroyTexture(langueTexture);
+    SDL_DestroyTexture(gBlangue);
     SDL_DestroyTexture(esc);
     SDL_DestroyTexture(theme);
     SDL_DestroyTexture(volWord);

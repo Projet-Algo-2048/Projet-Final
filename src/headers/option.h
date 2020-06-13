@@ -10,9 +10,11 @@
 #include <SDL2/SDL_mixer.h>
 
 #include "SdlVar.h"
+#include "Language.h"
+#include "LinkedList.h"
 
 #define NUMBER_OF_THEME 3
 
-int optionMenu (int *numTheme, int *red, int *green, int *blue, int *volume, Mix_Music *music, SDL_Color color1, SDL_Color color2,SDL_Window *window, SDL_Renderer *renderer, TTF_Font *font, SDL_Surface *optionButtonSurface, SDL_Texture *optionButton);
+int optionMenu (int *, int *, int *, int *, int *, Mix_Music *, SDL_Color , SDL_Color ,SDL_Window *, SDL_Renderer *, TTF_Font *, SDL_Surface *, SDL_Texture *);
 
 #endif
