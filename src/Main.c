@@ -32,8 +32,19 @@ int main ()
 
     /****************LOADING OF THE DIFFERENTS LANGUGES**************/
 
-    loadLanguage(DEFAULT_LANG);
-    
+    Cell2Cyclic * language = asCell2Cyclic( getAvailableLanguage() );                   // get all language as a Cyclic double linked List
+    printfAvailableLanguage();
+
+    char* firstLang = ((LanguageFile*)(language->value))->language;
+    while (strcmp( ((LanguageFile*)(language->value))->filename, DEFAULT_LANG) ) {      // initialise list to start at Default language
+        language = language->next;
+
+        if (((LanguageFile*)(language->value))->language == firstLang) {
+            printf(" Default Lang not found ! Set language to %s\n", firstLang);
+            break;
+        }  
+    }
+    loadLanguage( ((LanguageFile*)(language->value))->filename );                       //load language
 
 
     /******************************************************/
@@ -319,7 +330,7 @@ while (programRUNNIG)
                             {
                                 // bool afin de ferme le programme si on clique sur la croix pdnt les options
                             int trueFalse = 1;
-                            trueFalse = optionMenu(&theme, &raid, &green, &blue, &volume, neverGonna, white, red, window, renderer, titleFONT, optionButtonSurface, optionButton);
+                            trueFalse = optionMenu(&language, &theme, &raid, &green, &blue, &volume, neverGonna, white, red, window, renderer, titleFONT, optionButtonSurface, optionButton);
                             if (trueFalse == 0)
                                 programRUNNIG = SDL_FALSE;
                             

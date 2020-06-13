@@ -50,7 +50,7 @@ Cell* getAvailableLanguage() {
         }
 
         LanguageFile* file = malloc( sizeof(LanguageFile) );            //new structure LanguageFile
-        sprintf(file->filename, ent->d_name);
+        sprintf(file->filename, strtok(ent->d_name, "."));
         sprintf(file->language, language);
         addValue(&AvailableLanguage, file);                             //add to AvailableLanguage
     }
@@ -100,7 +100,7 @@ int loadLanguage(const char * lang) {
     if (TranslationList != NULL) unloadLanguage();                                          // Unload previously loaded language 
 
     char fileName[256] = "";
-    sprintf(fileName, "%s%s.%s", LANG_DIRECTORY, lang, LANG_FILE_EXTENTION);                // set filename with format
+    sprintf(fileName, "%s%s.%s", LANG_DIRECTORY, lang, LANG_FILE_EXTENSION);                // set filename with format
     FILE* stream = fopen(fileName, "r");                                                    // get stream from file in read only if it exist
 
     if (stream == NULL && lang == DEFAULT_LANG) {                                           // DEFAULT LANG FILE DOES NOT EXIST
@@ -153,7 +153,7 @@ char * getTranslatedText(char * id) {
  */
 int printfAvailableLanguage() {
     foreach(i, AvailableLanguage) {                                                                     //iterate i throught the list
-        printf("%s\n", ((LanguageFile*)i->value)->language);
+        printf("%s : %s\n", ((LanguageFile*)i->value)->language, ((LanguageFile*)i->value)->filename);
     }
     printf("\n");
 

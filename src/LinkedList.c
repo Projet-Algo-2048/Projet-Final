@@ -74,6 +74,31 @@ int removeCell(Cell** header, Cell* cell) {
 }
 
 /**
+ * @fn Cell2Cyclic* asCell2Cyclic(Cell* cell)
+ * @brief transform a Simple Linked List into a Cyclic Double linked list
+ * @param cell pointer to the first element of the linked list
+ * @return a pointer to one element of the cyclic 
+ */
+Cell2Cyclic* asCell2Cyclic(Cell* cell) {
+	if (cell == NULL) return NULL;
+
+	Cell2Cyclic* startCell = malloc(sizeof(Cell2Cyclic));
+	startCell->value = cell->value;
+
+	Cell2Cyclic* lastCell = startCell;
+	foreach(i, cell->next) {
+		Cell2Cyclic* temp = malloc(sizeof(Cell2Cyclic));
+		temp->value = i->value;
+		lastCell->next = temp;
+		temp->previous = lastCell;
+		lastCell = temp;
+	}
+	startCell->previous = lastCell;
+	lastCell->next = startCell;
+	return startCell;
+}
+
+/**
  * @fn void freeAll(Cell* header)
  * @brief free all Cell of a list. BUT DO NOT FREE VALUE !
  *

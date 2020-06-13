@@ -15,6 +15,6 @@
 
 #define NUMBER_OF_THEME 3
 
-int optionMenu (int *, int *, int *, int *, int *, Mix_Music *, SDL_Color , SDL_Color ,SDL_Window *, SDL_Renderer *, TTF_Font *, SDL_Surface *, SDL_Texture *);
+int optionMenu (Cell2Cyclic **, int *, int *, int *, int *, int *, Mix_Music *, SDL_Color , SDL_Color ,SDL_Window *, SDL_Renderer *, TTF_Font *, SDL_Surface *, SDL_Texture *);
 
 #endif
