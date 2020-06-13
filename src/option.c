@@ -1,6 +1,6 @@
 #include "headers/option.h"
 
-int optionMenu (int *numTheme, int *red, int *green, int *blue, int *volume, Mix_Music *music, SDL_Color color1, SDL_Color color2,SDL_Window *window, SDL_Renderer *renderer, TTF_Font *font, SDL_Surface *optionButtonSurface, SDL_Texture *optionButton)
+int optionMenu (Cell2Cyclic ** language, int *numTheme, int *red, int *green, int *blue, int *volume, Mix_Music *music, SDL_Color color1, SDL_Color color2,SDL_Window *window, SDL_Renderer *renderer, TTF_Font *font, SDL_Surface *optionButtonSurface, SDL_Texture *optionButton)
 {
     //reset the actual window
     SDL_RenderClear(renderer);
@@ -432,6 +432,28 @@ dBlangueRect.y = langueRect.y + 5;
                                         *green = 113;
                                         a = 0;
                                     }
+
+                               if ((mouseBx < dBlangueRect.x + dBlangueRect.w) && (mouseBx > dBlangueRect.x) &&
+                                    (mouseBy < dBlangueRect.y + dBlangueRect.h) && (mouseBy > dBlangueRect.y)) {
+
+                                    *language = (*language)->next;
+                                    loadLanguage( ((LanguageFile *)((*language)->value))->filename );
+
+                                    langueSurface = TTF_RenderText_Solid(font, getTranslatedText("Lang"), color1);
+                                    langueTexture = SDL_CreateTextureFromSurface(renderer, langueSurface);
+
+                                }
+
+                                if( (mouseBx < gBlangueRect.x + gBlangueRect.w) && (mouseBx > gBlangueRect.x) &&
+                                    (mouseBy < gBlangueRect.y + gBlangueRect.h) && (mouseBy > gBlangueRect.y)) {
+
+                                    *language = (*language)->previous;
+                                    loadLanguage(((LanguageFile *)((*language)->value))->filename);
+
+                                    langueSurface = TTF_RenderText_Solid(font, getTranslatedText("Lang"), color1);
+                                    langueTexture = SDL_CreateTextureFromSurface(renderer, langueSurface);
+                                }
+
                                 //leave by click on 'return'
                                 if ((mouse_x < returnButtonRect.x + returnButtonRect.w)&&
                                     (mouse_x > returnButtonRect.x) &&
