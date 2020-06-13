@@ -178,7 +178,7 @@ int selectGame(int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *re
                                     (selectionEvent.button.y < fourTextureRect.y + fourTextureRect.h)&&
                                     (selectionEvent.button.y > fourTextureRect.y))
                                         {
-                                            truefalse = game(red, green, blue, font, renderer, window);
+                                            truefalse = game(red, green, blue, font, renderer, window, 4);
                                             if (truefalse == 0)
 													{
 														selectionRunning = SDL_FALSE;
@@ -190,6 +190,19 @@ int selectGame(int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *re
 														return 1;
 													}
                                         }
+
+                                if ((selectionEvent.button.x < eightTextureRect.x + eightTextureRect.w) && (selectionEvent.button.x > eightTextureRect.x) &&
+                                    (selectionEvent.button.y < eightTextureRect.y + eightTextureRect.h) && (selectionEvent.button.y > eightTextureRect.y)) {
+                                    printf("loadding 4x4 board\n");
+                                    truefalse = game(red, green, blue, font, renderer, window, 8);
+                                    if (truefalse == 0) {
+                                        selectionRunning = SDL_FALSE;
+                                        return 0;
+                                    } else if (truefalse == 1) {
+                                        selectionRunning = SDL_FALSE;
+                                        return 1;
+                                    }
+                                }
                             }
                     }
 

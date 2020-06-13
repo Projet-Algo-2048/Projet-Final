@@ -1,3 +1,6 @@
+#ifndef Game
+#define Game
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -19,14 +22,11 @@
 #define BLOCK_HEIGH 110
 #define BLOCK_WIDTH 110
 
-#ifndef Game
-#define Game
-
 int slide(Directions, Box * **, int);
 bool canMove(Box * **, int);
-int printBoard(SDL_Color, SDL_Rect ,TTF_Font *, char* , SDL_Surface *, SDL_Texture *, Box * **, int , SDL_Rect , SDL_Rect , SDL_Renderer *);
+int refreshRenderer(int, int, int, int, SDL_Color, SDL_Rect ,TTF_Font *, char* , SDL_Surface *, SDL_Texture *, Box * **, int , SDL_Rect , SDL_Rect , SDL_Renderer *);
 int printBoardDebug (Box * **, int );
 Box * generateNewBox(Box * ** , int );
-int game(int *, int *, int *, TTF_Font *, SDL_Renderer *, SDL_Window *);
+int game(int *, int *, int *, TTF_Font *, SDL_Renderer *, SDL_Window *, int);
 
 #endif

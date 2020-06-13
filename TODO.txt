@@ -1,3 +1,4 @@
 si language deja charge ne pas le charger une 2e fois
 refresh renderer after language change
+function to free game
 

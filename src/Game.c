@@ -9,23 +9,18 @@
  * @fn int game(GameState state)
  * @brief represente the game course
  */
-int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *renderer, SDL_Window *window) {
+int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *renderer, SDL_Window *window, int size) {
+   //SDL_RenderClear(renderer); reset renderer
 
-   //reset the screen
-   //SDL_RenderClear(renderer);
-	 
+	GameState state;
+	state.size = size;
 
-	 //const Uint8 redBG = (const Uint8)red;
-	
-   //creation of the main rectangle
-	SDL_Rect rectangle;
-	rectangle.x = 50;
-	rectangle.y = 120;
-	rectangle.w = RECTANGLE_WIDTH;
-	rectangle.h = RECTANGLE_HIGH;
+	int boxGap = RECTANGLE_WIDTH / (10 * (state.size));
+	int boxWidth = (RECTANGLE_WIDTH - boxGap * (state.size + 1)) / state.size;
+	int boxHeight = (RECTANGLE_HIGH - boxGap * (state.size + 1)) / state.size;
 
-	//creation of the number's color rectangle
-	SDL_Rect caseRect;
+	SDL_Rect rectangle = { 50, 120, RECTANGLE_WIDTH, RECTANGLE_HIGH };	/**< the board main rectangle */
+	SDL_Rect caseRect = { 0, 0, boxWidth, boxHeight };					/**< a box rectangle */
 
 	//loading a dedicated texture for the numbers value
 	SDL_Color white = {255, 255, 255, 0};
@@ -33,22 +28,17 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
     font = TTF_OpenFont("ressources/SDL/font/Gameplay.ttf",fontSize);
 	char CaseNumber [10] = "0";
 	SDL_Surface *numberSurface = TTF_RenderText_Solid(font, CaseNumber,white);
-	if (!numberSurface)
-        SDL_EXITWITHERROR("creation number surface");
+	if (!numberSurface) SDL_EXITWITHERROR("creation number surface");
+
 	SDL_Texture *numberTexture = SDL_CreateTextureFromSurface(renderer, numberSurface);
-	if (!numberTexture)
-        SDL_EXITWITHERROR("creation number texture");
+	if (!numberTexture) SDL_EXITWITHERROR("creation number texture");
+
 	SDL_Rect numberRect;
 	SDL_QueryTexture(numberTexture, NULL, NULL, &numberRect.w, &numberRect.h);
 
 
-
-
-
     /* initialisation of the game */
-    GameState state;
-    state.size = 4;
-    state.board = malloc(state.size * sizeof(Box **)); //difference with Box * (*temp)[] = malloc(sizeof(Box *[size][size])) ?
+    state.board = malloc(state.size * sizeof(Box **));
 	for (int i = 0; i < state.size; i++) {
 		state.board[i] = malloc(state.size * sizeof(Box*));
 		for (int j = 0; j < state.size; j++) state.board[i][j] = NULL;
@@ -61,104 +51,67 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
 	int truefalse = 1;
 
     /* Course of the game */
-	
-	
-		while (playing) {
-        	generateNewBox(state.board, state.size);
-
-			printBoardDebug(state.board, state.size);
+	while (playing) {
+		generateNewBox(state.board, state.size);
+		printBoardDebug(state.board, state.size);
         	
-			SDL_RenderClear(renderer);
+        if (!canMove(state.board, state.size)) break;
 
-			//draw the image to the window
-			SDL_SetRenderDrawColor(renderer, 44, 44, 44, 255);
-			SDL_RenderFillRect(renderer, &rectangle);
-			printBoard(white, numberRect, font, CaseNumber,numberSurface, numberTexture, state.board, state.size, caseRect, rectangle, renderer );
-			SDL_SetRenderDrawColor(renderer, *red, *green, *blue, 0);
+        int moves = 0;
+        do {
+            while(SDL_PollEvent(&playEvent)) {
+				switch(playEvent.type) {
+					case SDL_QUIT:
+						playing = SDL_FALSE;
+						return 0;
+					break;
 
-			SDL_RenderPresent(renderer);
-			
+					case SDL_KEYDOWN:
+						switch(playEvent.key.keysym.sym) {
 
-        	if (!canMove(state.board, state.size)) break;
+							case SDLK_LEFT: moves = slide(LEFT, state.board, state.size); break;
+							case SDLK_RIGHT: moves = slide(RIGHT, state.board, state.size); break;
+							case SDLK_UP: moves = slide(UP, state.board, state.size); break;
+							case SDLK_DOWN: moves = slide(DOWN, state.board, state.size); break;
 
-        	int moves = 0;
-        	do {
-            	while(SDL_PollEvent(&playEvent))
-					{
-						switch(playEvent.type)
-							{
-								case SDL_QUIT:
+							case SDLK_ESCAPE:
+
+								//bool afin fermer completement prog ou non dependament du choix ds le sub menu pause
+								truefalse = pauseMenu(red, green, blue, font, renderer, window);
+								if (truefalse == 0) {
 									playing = SDL_FALSE;
 									return 0;
-								break;
+								} else if (truefalse == 2) {
+									playing = SDL_FALSE;
+									return 1;
+								}
+									
+							break;
 
-								case SDL_KEYDOWN:
-									switch(playEvent.key.keysym.sym)
-										{
-											case SDLK_LEFT:
-												moves = slide(LEFT, state.board, state.size);
-											break;
+						}
+					break;
+				}
 
-											case SDLK_RIGHT:
-												moves = slide(RIGHT, state.board, state.size);
-											break;
-											
-											case SDLK_UP:
-												moves = slide(UP, state.board, state.size);
-											break;
+			}
+			//refresh view when event occured
+			refreshRenderer(boxGap, *red, *green, *blue, white, numberRect, font, CaseNumber, numberSurface, numberTexture, state.board, state.size, caseRect, rectangle, renderer);
+			SDL_RenderPresent(renderer);
 
-											case SDLK_DOWN:
-												moves = slide(DOWN, state.board, state.size);
-											break;
+        } while (moves == 0);
+	}
 
-											case SDLK_ESCAPE:
-												//bool afin fermer completement prog ou non dependament du choix ds le sub menu pause
-												
-												truefalse = pauseMenu(red, green, blue, font, renderer, window);
-												if (truefalse == 0)
-													{
-														playing = SDL_FALSE;
-														return 0;
-													}
-												else if (truefalse == 2)
-													{
-														playing = SDL_FALSE;
-														return 1;
-													}
-												//recharge le visuel car sinon doit attendre mouvement
-												SDL_RenderClear(renderer);
-												SDL_SetRenderDrawColor(renderer, 44, 44, 44, 255);
-												SDL_RenderFillRect(renderer, &rectangle);
-												printBoard(white, numberRect, font, CaseNumber,numberSurface, numberTexture, state.board, state.size, caseRect, rectangle, renderer );
-												SDL_SetRenderDrawColor(renderer, *red, *green, *blue, 0);
-												SDL_RenderPresent(renderer);
-											break;
+	printf("Game Over ! \n");
 
-										}
-								break;
-							}
-					}
-            	//if (moves == 0) printf("2Can not move like that %c\n", c);
-        	} while (moves == 0);
+    /* freeing memory */
+    for (int i = 0; i < state.size; i++) {
+        for (int j = 0; j < state.size; j++) if (state.board[i][j] != NULL) free(state.board[i][j]);
+        free(state.board[i]);
+    }
+    free(state.board);
+	playing = SDL_FALSE;
+	return 1;
 
-			//clear the screen
-			
-			//printf("test\n");
-
-		}
-		printf("Game Over ! \n");
-
-    	/* freeing memory */
-    	for (int i = 0; i < state.size; i++) {
-        	for (int j = 0; j < state.size; j++) if (state.board[i][j] != NULL) free(state.board[i][j]);
-        	free(state.board[i]);
-    	}
-    	free(state.board);
-		playing = SDL_FALSE;
-		return 1;
-
-		SDL_DestroyTexture(numberTexture);
-	
+	SDL_DestroyTexture(numberTexture);
 }
 
 /**
@@ -214,7 +167,7 @@ Box * generateNewBox(Box * **board, int size) {
 }
 
 /**
- * @fn int printBoard(Box*** board, int size, SDL_Rect caseRect, SDL_Rect rectangle, SDL_Renderer *renderer)
+ * @fn int printBoardDebug(Box*** board, int size, SDL_Rect caseRect, SDL_Rect rectangle, SDL_Renderer *renderer)
  * @brief just a debug function that print the board
  */
 
@@ -231,12 +184,20 @@ int printBoardDebug (Box * ** board, int size) {
 }
 
 
-int printBoard (SDL_Color white, SDL_Rect numberRect,TTF_Font *font, char* CaseNumber, SDL_Surface *numberSurface, SDL_Texture *numberTexture,  Box * ** board, int size, SDL_Rect caseRect, SDL_Rect rectangle, SDL_Renderer *renderer){
+int refreshRenderer(int boxGap, int red, int green, int blue, SDL_Color white, SDL_Rect numberRect,TTF_Font *font, char* CaseNumber, SDL_Surface *numberSurface, SDL_Texture *numberTexture,  Box * ** board, int size, SDL_Rect caseRect, SDL_Rect rectangle, SDL_Renderer *renderer){
+	SDL_SetRenderDrawColor(renderer, red, green, blue, 0);	// set color to theme color 
+	SDL_RenderClear(renderer);								// reset the screen 
+
+	SDL_SetRenderDrawColor(renderer, 44, 44, 44, 255);		// set color for board background 
+	SDL_RenderFillRect(renderer, &rectangle);				// draw background 
+	
 	Uint8 r, g, b, a;
-	printf("du biff\n");
-	//printBoardDebug(board, size);
     for (int y=0; y<size; y++) {
 		for (int x=0; x<size; x++){
+
+			caseRect.x = rectangle.x + caseRect.w * x + boxGap * (x + 1);			//position x of the current box
+			caseRect.y = rectangle.y + caseRect.h * y + boxGap * (y + 1);			//position y of the current box
+
 			//the rectangle s color depend of the number value   
 			if ( board[y][x] == NULL ) { r = 150; g = 150; b = 150; a = 150; sprintf(CaseNumber, " ");}  
 			else {
@@ -257,16 +218,16 @@ int printBoard (SDL_Color white, SDL_Rect numberRect,TTF_Font *font, char* CaseN
 				}
 			}  
 
-            caseRect.w = BLOCK_WIDTH;
-			caseRect.h = BLOCK_HEIGH;
-			caseRect.x = rectangle.x + caseRect.w * x + 20 * (x+1);
-			caseRect.y = rectangle.y + caseRect.h * y + 20 * (y+1);
+
 			numberSurface = TTF_RenderText_Solid(font, CaseNumber, white);
-			numberTexture = SDL_CreateTextureFromSurface(renderer, numberSurface);
-			numberRect.x = caseRect.x + (BLOCK_WIDTH - numberRect.w) / 2;
-			numberRect.y = caseRect.y + (BLOCK_HEIGH - numberRect.h) / 2;
+			numberTexture = SDL_CreateTextureFromSurface(renderer, numberSurface);	
+
+			numberRect.x = caseRect.x + (caseRect.w - numberRect.w) / 2;
+			numberRect.y = caseRect.y + (caseRect.h - numberRect.h) / 2;
+
 			SDL_SetRenderDrawColor(renderer, r, g, b, a);
 			SDL_RenderFillRect(renderer, &caseRect);
+
 			SDL_RenderCopy(renderer, numberTexture, NULL, &numberRect);
 					
         }
