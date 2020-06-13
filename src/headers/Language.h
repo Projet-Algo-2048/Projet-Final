@@ -9,7 +9,7 @@
 #include "LinkedList.h"
 
 #define LANG_DIRECTORY "ressources/lang/"
-#define LANG_FILE_EXTENTION "lang"
+#define LANG_FILE_EXTENSION "lang"
 #define DEFAULT_LANG "en_us"
 
 /**
