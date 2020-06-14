@@ -11,6 +11,8 @@
 #include <stdio.h>
 
 #include "SdlVar.h"
+#include "Language.h"
+#include "LinkedList.h"
 
 #define HIGH_SCORE_FILE_NAME "HS.txt"
 #define MAX_SCORE_TO_PRINT 10

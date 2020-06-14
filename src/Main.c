@@ -357,8 +357,10 @@ while (programRUNNIG)
                         (event.button.y < hsButtonRect.y + hsButtonRect.h)&&
                         (event.button.y > hsButtonRect.y))
                         {
-                            int tf = 0;
+                            int tf = 1;
                            tf = printHighScore(&raid, &green, &blue, titleFONT, renderer, window);
+                           if (tf == 0)
+                            programRUNNIG = SDL_FALSE;
                         }
 
                     break;

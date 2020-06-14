@@ -141,9 +141,26 @@ int printHighScore(int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer
         return 0;
       }
 
+    /**********HIGHSCORE**************/
+    int fontSize = 100;
+    font = TTF_OpenFont("ressources/SDL/font/Gameplay.ttf",fontSize);
+    
+    SDL_Surface *hsSurface = TTF_RenderText_Solid(font, getTranslatedText("mainMenu.hs"), white);
+    if (!hsSurface)
+      SDL_EXITWITHERROR("creation hsSurface");
+    SDL_Texture *hsTexture = SDL_CreateTextureFromSurface(renderer, hsSurface);
+    if(!hsTexture)
+      SDL_EXITWITHERROR("creation hsTexture");
+    SDL_FreeSurface(hsSurface);
+    SDL_Rect hsRect;
+    SDL_QueryTexture(hsTexture, NULL, NULL, &hsRect.w, &hsRect.h);
+    hsRect.x = (WINDOW_LARGEUR - hsRect.w) / 2;
+    hsRect.y = 20;
+
 
     /**********CREATING HS SURFACE N TEXTURE**************/
-    int fontSize = 50;
+    fontSize = 70;
+    font = TTF_OpenFont("ressources/SDL/font/Gameplay.ttf",fontSize);
     char toPrint[90] = ".";
     SDL_Surface *blazeSurface = TTF_RenderText_Solid(font, toPrint, white);
     if (!blazeSurface)
@@ -154,14 +171,42 @@ int printHighScore(int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer
     SDL_Rect blazeRect;
     SDL_QueryTexture(blazeTexture, NULL, NULL, &blazeRect.w, &blazeRect.h);
     blazeRect.x = (WINDOW_LARGEUR - blazeRect.w) / 2;
-    blazeRect.y = 20;
+    blazeRect.y = hsRect.y + hsRect.h + 20;
 
 
+  SDL_Event hsEvent;
+  SDL_bool hsRunning = SDL_TRUE;
     
+  while(hsRunning)
+    {
+      while(SDL_PollEvent(&hsEvent))
+        {
+          switch(hsEvent.type)
+            {
+              case SDL_QUIT:
+                hsRunning = SDL_FALSE;
+                return 0;
+              break;
+
+              case SDL_KEYDOWN:
+                switch(hsEvent.key.keysym.sym)
+                  {
+                    case SDLK_ESCAPE:
+                      hsRunning = SDL_FALSE;
+                      return 1;
+                    break;
+                  }
+              break;
+
+
+            }
+        }
+
     char buffer[256] = "";
     int count = 0;
     SDL_RenderClear(renderer);
     SDL_SetRenderDrawColor(renderer, *red, *green, *blue, 0);
+    SDL_RenderCopy(renderer, hsTexture, NULL, &hsRect);
     while(count < MAX_SCORE_PRINT && fgets(buffer, sizeof(buffer), highscore))
       {
         char NAME[70];
@@ -171,15 +216,20 @@ int printHighScore(int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer
         blazeSurface = TTF_RenderText_Solid(font, toPrint, white);
         blazeTexture = SDL_CreateTextureFromSurface(renderer, blazeSurface);
 
-        blazeRect.y += 50;
+        blazeRect.y += 90;
         SDL_QueryTexture(blazeTexture, NULL, NULL, &blazeRect.w, &blazeRect.h);
         blazeRect.x = (WINDOW_LARGEUR - blazeRect.w) / 2;
         SDL_RenderCopy(renderer, blazeTexture, NULL, &blazeRect); 
       }
-    
+    //SDL_RenderCopy(renderer, hsTexture, NULL, &hsRect);
+    SDL_SetRenderDrawColor(renderer, *red, *green, *blue, 0);
     SDL_RenderPresent(renderer);
-    SDL_Delay(5000);
+    
 
+    
+
+    }
     SDL_DestroyTexture(blazeTexture);
+    SDL_DestroyTexture(hsTexture);
 
   }
