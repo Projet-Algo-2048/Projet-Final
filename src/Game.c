@@ -15,9 +15,12 @@ int game(/* parameters here */)  {
     srand(time(NULL));                      //necessary for random in futur statement
 
     GameState state;
-    state.playerNumber = 1;
+    state.playerNumber = 2;
     state.size = 4;
-
+    state.score = malloc(state.playerNumber * sizeof(int));
+    for (int i = 0; i < state.playerNumber ; i++) {
+      state.score[i]=0;
+    }
     state.boards = malloc(state.playerNumber * sizeof(Board));
     for (int k = 0; k < state.playerNumber; k++) {
         state.boards[k] = malloc(state.size * sizeof(Box**));
@@ -28,7 +31,7 @@ int game(/* parameters here */)  {
         state.currentBoard = state.boards[k];
         generateNewBox(&state);
     }
-    state.score = 0;
+    
 
     /*
      state.board1 = malloc(state.size * sizeof(Box **));
@@ -52,6 +55,7 @@ int game(/* parameters here */)  {
     while (true) {
         state.currentPlayer = i % state.playerNumber;
         state.currentBoard = state.boards[state.currentPlayer];
+        state.Currentscore = state.score[state.currentPlayer];
         printf("c'estau tour du joueur %d de jouer \n", state.currentPlayer + 1);
 
         generateNewBox(&state);
@@ -66,7 +70,7 @@ int game(/* parameters here */)  {
                 printf("Bouger le plateau : ");
                 scanf("%d", &c);
             }while (c != 2 && c != 6 && c != 8 && c != 4);
-            
+
             switch (c) {
                 case 4: moves = slide(LEFT, &state); break;
                 case 6: moves = slide(RIGHT, &state); break;
@@ -75,10 +79,13 @@ int game(/* parameters here */)  {
             }
             if (moves == 0) printf("Can not move like that %c\n", c);
         }while (moves == 0);
-        
+
         i++;
  	}
-    printf("Score : %d\n", state.score);
+
+    for ( int i = 0; i < state.playerNumber; i++) {
+      printf("Score : %d\n", state.score[i]);
+    }
  	printf("Game Over ! \n");
     /* freeing memory */
 
@@ -198,7 +205,7 @@ int slide(Directions dir, GameState * state) {
 
 				if (k > 0 && state->currentBoard[j][k - 1] != NULL && state->currentBoard[j][k] != NULL && state->currentBoard[j][k - 1]->value == state->currentBoard[j][k]->value) {
                     state->currentBoard[j][k - 1]->value *= 2;
-                    state->score = state->score + state->currentBoard[j][k - 1]->value;
+                    state->Currentscore = state->Currentscore + state->currentBoard[j][k - 1]->value;
 					free(state->currentBoard[j][k]);
                     state->currentBoard[j][k] = NULL;
 					move++;
@@ -220,7 +227,7 @@ int slide(Directions dir, GameState * state) {
 
 				if (k < state->size - 1 && state->currentBoard[j][k + 1] != NULL && state->currentBoard[j][k] != NULL && state->currentBoard[j][k + 1]->value == state->currentBoard[j][k]->value) {
                     state->currentBoard[j][k + 1]->value *= 2;
-                    state->score = state->score + state->currentBoard[j][k + 1]->value;
+                    state->Currentscore = state->Currentscore + state->currentBoard[j][k + 1]->value;
 					free(state->currentBoard[j][k]);
                     state->currentBoard[j][k] = NULL;
 					move++;
@@ -242,7 +249,7 @@ int slide(Directions dir, GameState * state) {
 
 				if (k > 0 && state->currentBoard[k - 1][j] != NULL && state->currentBoard[k][j] != NULL && state->currentBoard[k - 1][j]->value == state->currentBoard[k][j]->value) {
                     state->currentBoard[k - 1][j]->value *= 2;
-                    state->score = state->score + state->currentBoard[k - 1][j]->value;
+                    state->Currentscore = state->Currentscore + state->currentBoard[k - 1][j]->value;
 					free(state->currentBoard[k][j]);
                     state->currentBoard[k][j] = NULL;
 					move++;
@@ -264,7 +271,7 @@ int slide(Directions dir, GameState * state) {
 
 				if (k < state->size - 1 && state->currentBoard[k + 1][j] != NULL && state->currentBoard[k][j] != NULL && state->currentBoard[k + 1][j]->value == state->currentBoard[k][j]->value) {
                     state->currentBoard[k + 1][j]->value *= 2;
-                    state->score = state->score + state->currentBoard[k + 1][j]->value;
+                    state->Currentscore = state->Currentscore + state->currentBoard[k + 1][j]->value;
 					free(state->currentBoard[k][j]);
                     state->currentBoard[k][j] = NULL;
 					move++;

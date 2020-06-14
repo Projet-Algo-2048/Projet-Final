@@ -32,13 +32,14 @@ typedef struct {
  * It gather all information about the game into one struct
  */
 typedef Box*** Board;
-typedef struct {    
+typedef struct {
     int playerNumber;                   /**< number of player */
     Board * boards;                     /**< list of board for multiplayer */
     int size;                           /**< size of the board */
     int currentPlayer;                  /**< current player */
     Board currentBoard;                 /**< current board usefull for function */
-    int score;                          /**< score of the player */
+    int* score;                          /**< score of the player */
+    int Currentscore;                   /**< current score */
 } GameState;
 
 #endif
