@@ -101,6 +101,7 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
 	}
 
 	printf("Game Over ! \n");
+	
 
     /* freeing memory */
     for (int i = 0; i < state.size; i++) {

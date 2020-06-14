@@ -5,6 +5,7 @@ int pauseMenu (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *re
         //clear the renderer memory
         SDL_RenderClear(renderer);
 
+
         SDL_Color white = {255, 255, 255, 0};
         SDL_Color rouge = {255, 0, 0, 0};
 
