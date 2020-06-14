@@ -50,7 +50,7 @@ int pauseMenu (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *re
         homeRect.x = (WINDOW_LARGEUR - homeRect.w) / 2;
         homeRect.y = resumeRect.y + resumeRect.h + 50;
 
-
+    
 
     SDL_Event pauseEvent;
     SDL_bool pauseRunning = SDL_TRUE;
@@ -195,8 +195,10 @@ int gameOver (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *ren
     SDL_Event gameoverEvent;
     SDL_bool gameoverRunning = SDL_TRUE;
     int mouse_x, mouse_y = 0;
+    
 
     while(gameoverRunning)  {
+        
         while(SDL_PollEvent(&gameoverEvent)) {
             switch(gameoverEvent.type) {
                 case SDL_QUIT:
@@ -247,6 +249,7 @@ int gameOver (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *ren
                      if ((gameoverEvent.button.x < restartRect.x + restartRect.w) && (gameoverEvent.button.x > restartRect.x) &&
                          (gameoverEvent.button.y < restartRect.y + restartRect.h) && (gameoverEvent.button.y > restartRect.y))
                         {
+                            int sc = setScore();
                             gameoverRunning = SDL_FALSE;
                             return 1;
                         }
@@ -256,6 +259,7 @@ int gameOver (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *ren
                      if ((gameoverEvent.button.x < homeRect.x + homeRect.w) && (gameoverEvent.button.x > homeRect.x) &&
                          (gameoverEvent.button.y < homeRect.y + homeRect.h) && (gameoverEvent.button.y > homeRect.y)) {
                          
+                         int sc = setScore();
                          gameoverRunning = SDL_FALSE;
                          return 2;
                      }
@@ -276,6 +280,7 @@ int gameOver (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *ren
         //display the loaded renderer
          SDL_RenderPresent(renderer);
     }
+    
 
     SDL_DestroyTexture(gameoverTexture);
     SDL_DestroyTexture(restartTexture);

@@ -9,6 +9,7 @@
 #include <SDL2/SDL_mixer.h>
 
 #include "SdlVar.h"
+#include "highscore.h"
 #include "Language.h"
 #include "LinkedList.h"
 

@@ -14,8 +14,8 @@
 #include "Language.h"
 #include "LinkedList.h"
 
-#define HIGH_SCORE_FILE_NAME "HS.txt"
-#define MAX_SCORE_TO_PRINT 10
+#define HIGH_SCORE_FILE_NAME "ressources/HS.txt"
+#define MAX_SCORE_TO_PRINT 5
 #define MAX_LENGHT_PLAYER_NAME 256
 #define MIN_SCORE_LENGHT 5
 #define MAX_SCORE_PRINT 5
