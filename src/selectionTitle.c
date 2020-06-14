@@ -188,13 +188,13 @@ int selectGame(int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *re
                                     (mouse_y < IATextureRect.y + IATextureRect.h) &&
                                     (mouse_y > IATextureRect.y))
                                 {
-                                    JvIASurface = TTF_RenderText_Solid(font, getTranslatedText("chMenu.ia"), rouge);
-                                    JvIATexture = SDL_CreateTextureFromSurface(renderer, JvIASurface);
+                                    IASurface = TTF_RenderText_Solid(font, getTranslatedText("chMenu.ia"), rouge);
+                                    IATexture = SDL_CreateTextureFromSurface(renderer, IASurface);
                                 }
                                 else
                                 {
-                                    JvIASurface = TTF_RenderText_Solid(font, getTranslatedText("chMenu.ia"), white);
-                                    JvIATexture = SDL_CreateTextureFromSurface(renderer, JvIASurface);
+                                    IASurface = TTF_RenderText_Solid(font, getTranslatedText("chMenu.ia"), white);
+                                    IATexture = SDL_CreateTextureFromSurface(renderer, IASurface);
                                 }
                                 break;
 
@@ -304,6 +304,7 @@ int selectGame(int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *re
                 SDL_RenderCopy(renderer, eightTexture, NULL, &eightTextureRect);
                 SDL_RenderCopy(renderer, JvJTexture, NULL, &JvJTextureRect);
                 SDL_RenderCopy(renderer, JvIATexture, NULL, &JvIATextureRect);
+                SDL_RenderCopy(renderer, IATexture, NULL, &IATextureRect);
 
                 SDL_RenderPresent(renderer);
             }
@@ -312,6 +313,6 @@ int selectGame(int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *re
     SDL_DestroyTexture(eightTexture);
     SDL_DestroyTexture(JvJTexture);
     SDL_DestroyTexture(JvIATexture);
-
+    SDL_DestroyTexture(IATexture);
 
     }

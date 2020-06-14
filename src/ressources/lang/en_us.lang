@@ -24,6 +24,7 @@ chMenu.fo = 4x4 grid
 chMenu.ei = 8x8 grid
 chMenu.jj = player vs player
 chMenu.ji = player VS IA
+chMenu.ia = IA Solo
 
 goMenu.go = Gameover
 goMenu.re = Restart

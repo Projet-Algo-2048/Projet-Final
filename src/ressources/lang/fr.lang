@@ -24,6 +24,7 @@ chMenu.fo = grille 4x4
 chMenu.ei = grille 8x8 
 chMenu.jj = joueur vs joueur
 chMenu.ji = joueur VS IA
+chMenu.ia = IA Solo
 
 goMenu.go = Gameover
 goMenu.re = Rejouer
