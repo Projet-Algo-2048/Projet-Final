@@ -351,6 +351,15 @@ while (programRUNNIG)
                                 programRUNNIG = SDL_FALSE;
                         }
 
+                    //launch HS
+                    if ((event.button.x < hsButtonRect.x + hsButtonRect.w)&&
+                        (event.button.x > hsButtonRect.x) &&
+                        (event.button.y < hsButtonRect.y + hsButtonRect.h)&&
+                        (event.button.y > hsButtonRect.y))
+                        {
+                            int tf = 0;
+                           tf = printHighScore(&raid, &green, &blue, titleFONT, renderer, window);
+                        }
 
                     break;
                 

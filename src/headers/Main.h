@@ -11,7 +11,7 @@
 #include "selectionTitle.h"
 #include "SdlVar.h"
 #include "Game.h"
-
+#include "highscore.h"
 #include "option.h"
 #include "Language.h"
 #include "LinkedList.h"
