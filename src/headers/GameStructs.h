@@ -23,7 +23,7 @@ typedef enum {
  * We choose to create a new struct in case we want to add new feature easily
  */
 typedef struct {
-    int value;                          /*< the score of the box*/
+    int value;                          /**< the score of the box*/
 } Box;
 
 /**
@@ -31,11 +31,14 @@ typedef struct {
  * @brief represente a the game state.
  * It gather all information about the game into one struct
  */
-typedef struct {
-    int size;
-    int score;                         /*< size of the board*/
-    Box*** board1;
-    Box*** board2;                     /*< the game board */
+typedef Box*** Board;
+typedef struct {    
+    int playerNumber;                   /**< number of player */
+    Board * boards;                     /**< list of board for multiplayer */
+    int size;                           /**< size of the board */
+    int currentPlayer;                  /**< current player */
+    Board currentBoard;                 /**< current board usefull for function */
+    int score;                          /**< score of the player */
 } GameState;
 
 #endif

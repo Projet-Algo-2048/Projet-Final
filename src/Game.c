@@ -9,14 +9,28 @@
  * @fn int game(GameState state)
  * @brief represente the game course
  */
- int game(/* parameters here */)  {
+int game(/* parameters here */)  {
 
-     /* initialisation of the game */
-     GameState state;
-     state.size = 4;
-     state.score =0;
+    /* initialisation of the game */
+    srand(time(NULL));                      //necessary for random in futur statement
 
+    GameState state;
+    state.playerNumber = 1;
+    state.size = 4;
 
+    state.boards = malloc(state.playerNumber * sizeof(Board));
+    for (int k = 0; k < state.playerNumber; k++) {
+        state.boards[k] = malloc(state.size * sizeof(Box**));
+        for (int i = 0; i < state.size; i++) {
+            state.boards[k][i] = malloc(state.size * sizeof(Box*));
+            for (int j = 0; j < state.size; j++) state.boards[k][i][j] = NULL;
+        }
+        state.currentBoard = state.boards[k];
+        generateNewBox(&state);
+    }
+    state.score = 0;
+
+    /*
      state.board1 = malloc(state.size * sizeof(Box **));
      for (int i = 0; i < state.size; i++) {
        state.board1[i] = malloc(state.size * sizeof(Box*));
@@ -32,58 +46,64 @@
      generateNewBox(state.board1, state.size);
      generateNewBox(state.board2, state.size);
 
-     /* Course of the game */
-     int i = 0;
+    /* Course of the game */
+    int i = 0;
 
- 	while (true) {
-   Box*** board;
-   i++;
+    while (true) {
+        state.currentPlayer = i % state.playerNumber;
+        state.currentBoard = state.boards[state.currentPlayer];
+        printf("c'estau tour du joueur %d de jouer \n", state.currentPlayer + 1);
 
-   if (i % 2 == 0) {
-       printf("c'est au joueur 1 de jouer\n");
-        board = state.board1;
-   }
-   else {
-       printf("c'est au joueur 2 de jouer\n");
-       board = state.board2;
-   }
+        generateNewBox(&state);
+        printBoard(&state);
 
-         generateNewBox(board, state.size);
-         printBoard(board, state.size);
+        if (!canMove(&state)) break;
 
-         if (!canMove(board, state.size)) break;
-
-         int moves = 0;
-         do {
-             int c;
-             do {
-                 printf("Bouger le plateau : ");
-                 scanf("%d", &c);
-             } while (c != 2 && c != 6 && c != 8 && c != 4);
-             switch (c) {
-             case 4: moves = slide(LEFT, board, state.size,&state.score); break;
-             case 6: moves = slide(RIGHT, board, state.size,&state.score); break;
-             case 8: moves = slide(UP, board, state.size,&state.score); break;
-             case 2: moves = slide(DOWN, board, state.size,&state.score); break;
-
-           } if (moves == 0) printf("2Can not move like that %c\n", c);
-         } while (moves == 0);
+        int moves = 0;
+        do {
+            int c;
+            do {
+                printf("Bouger le plateau : ");
+                scanf("%d", &c);
+            }while (c != 2 && c != 6 && c != 8 && c != 4);
+            
+            switch (c) {
+                case 4: moves = slide(LEFT, &state); break;
+                case 6: moves = slide(RIGHT, &state); break;
+                case 8: moves = slide(UP, &state); break;
+                case 2: moves = slide(DOWN, &state); break;
+            }
+            if (moves == 0) printf("Can not move like that %c\n", c);
+        }while (moves == 0);
+        
+        i++;
  	}
-  printf("Score : %d\n",state.score);
+    printf("Score : %d\n", state.score);
  	printf("Game Over ! \n");
-     /* freeing memory */
-     for (int i = 0; i < state.size; i++) {
-         for (int j = 0; j < state.size; j++) if (state.board1[i][j] != NULL) free(state.board1[i][j]);
-         free(state.board1[i]);
-     }
-     free(state.board1);
+    /* freeing memory */
 
-   for (int i = 0; i < state.size; i++) {
+    for (int k = 0; k < state.playerNumber; k++) {
+        for (int i = 0; i < state.size; i++) {
+            for (int j = 0; j < state.size; j++) if (state.boards[k][i][j] != NULL) free(state.boards[k][i][j]);
+            free(state.boards[k][i]);
+        }
+        free(state.boards[k]);
+    }
+    free(state.boards);
 
-         for (int j = 0; j < state.size; j++) if (state.board2[i][j] != NULL) free(state.board2[i][j]);
-         free(state.board2[i]);
-     }
-     free(state.board2);
+    /*
+    for (int i = 0; i < state.size; i++) {
+        for (int j = 0; j < state.size; j++) if (state.board1[i][j] != NULL) free(state.board1[i][j]);
+        free(state.board1[i]);
+    }
+    free(state.board1);
+
+    for (int i = 0; i < state.size; i++) {
+        for (int j = 0; j < state.size; j++) if (state.board2[i][j] != NULL) free(state.board2[i][j]);
+        free(state.board2[i]);
+    }
+    free(state.board2);
+    */
  }
 
 
@@ -94,7 +114,7 @@
  * @param board1 2D array
  * @return the box generated
  */
-Box * generateNewBox(Box * **board1, int size) {
+Box * generateNewBox(GameState * state) {
     Box * box = (Box *) malloc( sizeof(Box) );
     if (box == NULL) {
         printf("[ERROR] An error occured >> Could not allocate memory for new Box !");
@@ -102,19 +122,19 @@ Box * generateNewBox(Box * **board1, int size) {
     }
 
     int i, j;
-    i = rand() % 4;
-    j = rand() % 4;
+    i = rand() % state->size;
+    j = rand() % state->size;
 
     box->value = pow(2, (rand() % 2) + 1);
 
-    if (board1[i][j] == NULL) {
-        board1[i][j] = box;
+    if (state->currentBoard[i][j] == NULL) {
+        state->currentBoard[i][j] = box;
         return box;
 
     }
     else {
         free(box);
-        generateNewBox(board1, size);
+        generateNewBox(state);
     }
 
     return box;
@@ -125,10 +145,10 @@ Box * generateNewBox(Box * **board1, int size) {
  * @fn int printboard1(Box*** board1, int size)
  * @brief just a debug function that print the board1
  */
-int printBoard(Box * ** board, int size) {
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            (board[i][j] == NULL) ? printf("   |") : printf(" %d |", board[i][j]->value);
+int printBoard(GameState * state) {
+    for (int i = 0; i < state->size; i++) {
+        for (int j = 0; j < state->size; j++) {
+            (state->currentBoard[i][j] == NULL) ? printf("   |") : printf(" %d |", state->currentBoard[i][j]->value);
         }
         printf("\n");
     }
@@ -143,12 +163,12 @@ int printBoard(Box * ** board, int size) {
  * @param the size of the game board1
  * @return true if a move is possible false otherwise
  */
-bool canMove(Box * ** board1, int size) {
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            if (board1[i][j] == NULL) return true;
-            if (j != size - 1 && board1[i][j] != NULL && board1[i][j + 1] != NULL && board1[i][j]->value == board1[i][j + 1]->value) return true;
-            if (i != size - 1 && board1[i][j] != NULL && board1[i + 1][j] != NULL && board1[i][j]->value == board1[i + 1][j]->value) return true;
+bool canMove(GameState * state) {
+    for (int i = 0; i < state->size; i++) {
+        for (int j = 0; j < state->size; j++) {
+            if (state->currentBoard[i][j] == NULL) return true;
+            if (j != state->size - 1 && state->currentBoard[i][j] != NULL && state->currentBoard[i][j + 1] != NULL && state->currentBoard[i][j]->value == state->currentBoard[i][j + 1]->value) return true;
+            if (i != state->size - 1 && state->currentBoard[i][j] != NULL && state->currentBoard[i + 1][j] != NULL && state->currentBoard[i][j]->value == state->currentBoard[i + 1][j]->value) return true;
         }
     }
     return false;
@@ -162,25 +182,25 @@ bool canMove(Box * ** board1, int size) {
  * @param size of the game board1
  * @return the number of move made
  */
-int slide(Directions dir, Box *** board1, int size, int * score) {
+int slide(Directions dir, GameState * state) {
 	int move = 0;
 	switch (dir) {
 		case LEFT:
-		for (int i = 1; i < size; i++) {
-			for (int j = 0; j < size; j++) {
+		for (int i = 1; i < state->size; i++) {
+			for (int j = 0; j < state->size; j++) {
 				int k;
-				for (k = i; k > 0 && board1[j][k - 1] == NULL; k--) {
-					if (board1[j][k] == NULL) continue;
-					board1[j][k - 1] = board1[j][k];
-					board1[j][k] = NULL;
+				for (k = i; k > 0 && state->currentBoard[j][k - 1] == NULL; k--) {
+					if (state->currentBoard[j][k] == NULL) continue;
+                    state->currentBoard[j][k - 1] = state->currentBoard[j][k];
+                    state->currentBoard[j][k] = NULL;
 					move++;
 				}
 
-				if (k > 0 && board1[j][k - 1] != NULL && board1[j][k] != NULL && board1[j][k - 1]->value == board1[j][k]->value) {
-					board1[j][k - 1]->value *= 2;
-          *score=*score+board1[j][k - 1]->value;
-					free(board1[j][k]);
-                    board1[j][k] = NULL;
+				if (k > 0 && state->currentBoard[j][k - 1] != NULL && state->currentBoard[j][k] != NULL && state->currentBoard[j][k - 1]->value == state->currentBoard[j][k]->value) {
+                    state->currentBoard[j][k - 1]->value *= 2;
+                    state->score = state->score + state->currentBoard[j][k - 1]->value;
+					free(state->currentBoard[j][k]);
+                    state->currentBoard[j][k] = NULL;
 					move++;
 				}
 			}
@@ -188,21 +208,21 @@ int slide(Directions dir, Box *** board1, int size, int * score) {
 		break;
 
 	case RIGHT:
-		for (int i = size - 1; i >= 0; i--) {
-			for (int j = 0; j < size; j++) {
+		for (int i = state->size - 1; i >= 0; i--) {
+			for (int j = 0; j < state->size; j++) {
 				int k;
-				for (k = i; k < size - 1 && board1[j][k + 1] == NULL; k++) {
-					if (board1[j][k] == NULL) continue;
-					board1[j][k + 1] = board1[j][k];
-					board1[j][k] = NULL;
+				for (k = i; k < state->size - 1 && state->currentBoard[j][k + 1] == NULL; k++) {
+					if (state->currentBoard[j][k] == NULL) continue;
+                    state->currentBoard[j][k + 1] = state->currentBoard[j][k];
+                    state->currentBoard[j][k] = NULL;
 					move++;
 				}
 
-				if (k < size - 1 && board1[j][k + 1] != NULL && board1[j][k] != NULL && board1[j][k + 1]->value == board1[j][k]->value) {
-					board1[j][k + 1]->value *= 2;
-          *score=*score+board1[j][k + 1]->value;
-					free(board1[j][k]);
-                    board1[j][k] = NULL;
+				if (k < state->size - 1 && state->currentBoard[j][k + 1] != NULL && state->currentBoard[j][k] != NULL && state->currentBoard[j][k + 1]->value == state->currentBoard[j][k]->value) {
+                    state->currentBoard[j][k + 1]->value *= 2;
+                    state->score = state->score + state->currentBoard[j][k + 1]->value;
+					free(state->currentBoard[j][k]);
+                    state->currentBoard[j][k] = NULL;
 					move++;
 				}
 			}
@@ -210,21 +230,21 @@ int slide(Directions dir, Box *** board1, int size, int * score) {
 		break;
 
 	case UP:
-		for (int i = 1; i < size; i++) {
-			for (int j = 0; j < size; j++) {
+		for (int i = 1; i < state->size; i++) {
+			for (int j = 0; j < state->size; j++) {
 				int k;
-				for (k = i; k > 0 && board1[k - 1][j] == NULL; k--) {
-					if (board1[k][j] == NULL) continue;
-					board1[k - 1][j] = board1[k][j];
-					board1[k][j] = NULL;
+				for (k = i; k > 0 && state->currentBoard[k - 1][j] == NULL; k--) {
+					if (state->currentBoard[k][j] == NULL) continue;
+                    state->currentBoard[k - 1][j] = state->currentBoard[k][j];
+                    state->currentBoard[k][j] = NULL;
 					move++;
 				}
 
-				if (k > 0 && board1[k - 1][j] != NULL && board1[k][j] != NULL && board1[k - 1][j]->value == board1[k][j]->value) {
-					board1[k - 1][j]->value *= 2;
-          *score=*score+board1[k-1][j]->value;
-					free(board1[k][j]);
-                    board1[k][j] = NULL;
+				if (k > 0 && state->currentBoard[k - 1][j] != NULL && state->currentBoard[k][j] != NULL && state->currentBoard[k - 1][j]->value == state->currentBoard[k][j]->value) {
+                    state->currentBoard[k - 1][j]->value *= 2;
+                    state->score = state->score + state->currentBoard[k - 1][j]->value;
+					free(state->currentBoard[k][j]);
+                    state->currentBoard[k][j] = NULL;
 					move++;
 				}
 			}
@@ -232,21 +252,21 @@ int slide(Directions dir, Box *** board1, int size, int * score) {
 		break;
 
 	case DOWN:
-		for (int i = size - 1; i >= 0; i--) {
-			for (int j = 0; j < size; j++) {
+		for (int i = state->size - 1; i >= 0; i--) {
+			for (int j = 0; j < state->size; j++) {
 				int k;
-				for (k = i; k < size - 1 && board1[k + 1][j] == NULL; k++) {
-					if (board1[k][j] == NULL) continue;
-					board1[k + 1][j] = board1[k][j];
-					board1[k][j] = NULL;
+				for (k = i; k < state->size - 1 && state->currentBoard[k + 1][j] == NULL; k++) {
+					if (state->currentBoard[k][j] == NULL) continue;
+                    state->currentBoard[k + 1][j] = state->currentBoard[k][j];
+                    state->currentBoard[k][j] = NULL;
 					move++;
 				}
 
-				if (k < size - 1 && board1[k + 1][j] != NULL && board1[k][j] != NULL && board1[k + 1][j]->value == board1[k][j]->value) {
-					board1[k + 1][j]->value *= 2;
-          *score=*score+board1[k+1][j]->value;
-					free(board1[k][j]);
-                    board1[k][j] = NULL;
+				if (k < state->size - 1 && state->currentBoard[k + 1][j] != NULL && state->currentBoard[k][j] != NULL && state->currentBoard[k + 1][j]->value == state->currentBoard[k][j]->value) {
+                    state->currentBoard[k + 1][j]->value *= 2;
+                    state->score = state->score + state->currentBoard[k + 1][j]->value;
+					free(state->currentBoard[k][j]);
+                    state->currentBoard[k][j] = NULL;
 					move++;
 				}
 			}
