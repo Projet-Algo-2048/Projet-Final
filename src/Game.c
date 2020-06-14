@@ -12,12 +12,9 @@
 int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *renderer, SDL_Window *window, int size) {
    //SDL_RenderClear(renderer); reset renderer
 
-	GameState state;
-	state.size = size;
-
-	int boxGap = RECTANGLE_WIDTH / (10 * (state.size));
-	int boxWidth = (RECTANGLE_WIDTH - boxGap * (state.size + 1)) / state.size;
-	int boxHeight = (RECTANGLE_HIGH - boxGap * (state.size + 1)) / state.size;
+	int boxGap = RECTANGLE_WIDTH / (10 * size);
+	int boxWidth = (RECTANGLE_WIDTH - boxGap * (size + 1)) / size;
+	int boxHeight = (RECTANGLE_HIGH - boxGap * (size + 1)) / size;
 
 	SDL_Rect rectangle = { 50, 120, RECTANGLE_WIDTH, RECTANGLE_HIGH };	/**< the board main rectangle */
 	SDL_Rect caseRect = { 0, 0, boxWidth, boxHeight };					/**< a box rectangle */
@@ -38,99 +35,125 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
 
 	SDL_bool general = SDL_TRUE;
 
-	while(general)
-	{
-    /* initialisation of the game */
-    state.board = malloc(state.size * sizeof(Box **));
-	for (int i = 0; i < state.size; i++) {
-		state.board[i] = malloc(state.size * sizeof(Box*));
-		for (int j = 0; j < state.size; j++) state.board[i][j] = NULL;
-	}
-    srand(time(NULL));
-    generateNewBox(state.board, state.size);
+	while (general) {
 
-	SDL_bool playing = SDL_TRUE;
-	SDL_Event playEvent;
-	int truefalse = 1;
+		/* initialisation of the game */
+		srand(time(NULL));                      //necessary for random in futur statement
 
-    /* Course of the game */
-	while (playing) {
-		generateNewBox(state.board, state.size);
-		printBoardDebug(state.board, state.size);
-        	
-        if (!canMove(state.board, state.size)) break;
+		GameState state;
+		state.playerNumber = 2;
+		state.size = size;
+		state.score = malloc(state.playerNumber * sizeof(int));
+		for (int i = 0; i < state.playerNumber; i++) {
+			state.score[i] = 0;
+		}
+		state.boards = malloc(state.playerNumber * sizeof(Board));
+		for (int k = 0; k < state.playerNumber; k++) {
+			state.boards[k] = malloc(state.size * sizeof(Box**));
+			for (int i = 0; i < state.size; i++) {
+				state.boards[k][i] = malloc(state.size * sizeof(Box*));
+				for (int j = 0; j < state.size; j++) state.boards[k][i][j] = NULL;
+			}
+			state.currentBoard = state.boards[k];
+			generateNewBox(&state);
+		}
 
-        int moves = 0;
-        do {
-            while(SDL_PollEvent(&playEvent)) {
-				switch(playEvent.type) {
+		SDL_bool playing = SDL_TRUE;
+		SDL_Event playEvent;
+		int truefalse = 1;
+
+		/* Course of the game */
+		int i = 0;
+		while (playing) {
+			state.currentPlayer = i % state.playerNumber;
+			state.currentBoard = state.boards[state.currentPlayer];
+			state.Currentscore = state.score[state.currentPlayer];
+			//printf("c'estau tour du joueur %d de jouer \n", state.currentPlayer + 1);
+
+			generateNewBox(&state);
+			printBoardDebug(&state);
+
+			if (!canMove(&state)) break;
+
+			int moves = 0;
+			do {
+				while (SDL_PollEvent(&playEvent)) {
+					switch (playEvent.type) {
 					case SDL_QUIT:
 						playing = SDL_FALSE;
 						return 0;
-					break;
+						break;
 
 					case SDL_KEYDOWN:
-						switch(playEvent.key.keysym.sym) {
+						switch (playEvent.key.keysym.sym) {
 
-							case SDLK_LEFT: moves = slide(LEFT, state.board, state.size); break;
-							case SDLK_RIGHT: moves = slide(RIGHT, state.board, state.size); break;
-							case SDLK_UP: moves = slide(UP, state.board, state.size); break;
-							case SDLK_DOWN: moves = slide(DOWN, state.board, state.size); break;
+						case SDLK_LEFT: moves = slide(LEFT, &state); break;
+						case SDLK_RIGHT: moves = slide(RIGHT, &state); break;
+						case SDLK_UP: moves = slide(UP, &state); break;
+						case SDLK_DOWN: moves = slide(DOWN, &state); break;
 
-							case SDLK_ESCAPE:
+						case SDLK_ESCAPE:
 
-								//bool afin fermer completement prog ou non dependament du choix ds le sub menu pause
-								truefalse = pauseMenu(red, green, blue, font, renderer, window);
-								if (truefalse == 0) {
-									playing = SDL_FALSE;
-									return 0;
-								} else if (truefalse == 2) {
-									playing = SDL_FALSE;
-									return 1;
-								}
-									
+							//bool afin fermer completement prog ou non dependament du choix ds le sub menu pause
+							truefalse = pauseMenu(red, green, blue, font, renderer, window);
+							if (truefalse == 0) {
+								playing = SDL_FALSE;
+								return 0;
+							}
+							else if (truefalse == 2) {
+								playing = SDL_FALSE;
+								return 1;
+							}
+
 							break;
 
 						}
-					break;
+						break;
+					}
+
 				}
+				//refresh view when event occured
+				refreshRenderer(boxGap, *red, *green, *blue, white, numberRect, font, CaseNumber, numberSurface, numberTexture, &state, caseRect, rectangle, renderer);
+				SDL_RenderPresent(renderer);
 
-			}
-			//refresh view when event occured
-			refreshRenderer(boxGap, *red, *green, *blue, white, numberRect, font, CaseNumber, numberSurface, numberTexture, state.board, state.size, caseRect, rectangle, renderer);
-			SDL_RenderPresent(renderer);
+			} while (moves == 0);
 
-        } while (moves == 0);
-	}
+			i++;
+		}
 
-	//printf("Game Over ! \n");
-	int fintf = 0;
-	fintf = gameOver(red, green, blue, font, renderer, window);
-	if (fintf == 0)
+		/* Game over*/;
+		for (int i = 0; i < state.playerNumber; i++) {
+			printf("Score : %d\n", state.score[i]);
+		}
+		printf("Game Over ! \n");
+
+		int fintf = 0;
+		fintf = gameOver(red, green, blue, font, renderer, window);
+		if (fintf == 0)
 		{
-			general=SDL_FALSE;
+			general = SDL_FALSE;
 			return 0;
 		}
-	else if (fintf == 2)
+		else if (fintf == 2)
 		{
 			general = SDL_FALSE;
 			return 1;
 		}
 
-    /* freeing memory */
-    for (int i = 0; i < state.size; i++) {
-        for (int j = 0; j < state.size; j++) if (state.board[i][j] != NULL) free(state.board[i][j]);
-        free(state.board[i]);
-    }
-    free(state.board);
-	playing = SDL_FALSE;
+		/* freeing memory */
+		for (int k = 0; k < state.playerNumber; k++) {
+			for (int i = 0; i < state.size; i++) {
+				for (int j = 0; j < state.size; j++) if (state.boards[k][i][j] != NULL) free(state.boards[k][i][j]);
+				free(state.boards[k][i]);
+			}
+			free(state.boards[k]);
+		}
+		free(state.boards);
+
+		playing = SDL_FALSE;
 	}
 	return 1;
-	
-
-	SDL_DestroyTexture(numberTexture);
 }
-
 /**
  * @fn generateNewBox(int size, Box * board[size][size])
  * @brief add a new box to the game. Need srand(time(NULL) been called before
@@ -138,15 +161,14 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
  * @param board 2D array 
  * @return the box generated
  */
-
-Box * generateNewBox(Box * **board, int size) {
-	Box*** emptyBoxes = malloc(size * size * sizeof(Box**));
-	for (int i = 0; i < size * size; i++) emptyBoxes[i] = NULL;
+Box * generateNewBox(GameState * state) {
+	Box*** emptyBoxes = malloc(state->size * state->size * sizeof(Box**));
+	for (int i = 0; i < state->size * state->size; i++) emptyBoxes[i] = NULL;
 
 	int k = 0;
-	for (int i = 0; i < size; i++) {
-		for (int j = 0; j < size; j++) {
-			if (board[i][j] == NULL) emptyBoxes[k++] = &(board[i][j]);
+	for (int i = 0; i < state->size; i++) {
+		for (int j = 0; j < state->size; j++) {
+			if (state->currentBoard[i][j] == NULL) emptyBoxes[k++] = &(state->currentBoard[i][j]);
 		}
 	}
 
@@ -155,8 +177,11 @@ Box * generateNewBox(Box * **board, int size) {
 	Box* box = (Box*)malloc(sizeof(Box));
 	box->value = power(2, (rand() % 2) + 1);
 
-	return *(emptyBoxes[index]) = box;
+	*(emptyBoxes[index]) = box;
+	free(emptyBoxes);
+	return box;
 /*
+Box * generateNewBox(GameState * state) {
     Box * box = (Box *) malloc( sizeof(Box) );
     if (box == NULL) {
         printf("[ERROR] An error occured >> Could not allocate memory for new Box !");
@@ -164,35 +189,34 @@ Box * generateNewBox(Box * **board, int size) {
     }
 
     int i, j;
-    i = rand() % 4;
-    j = rand() % 4;
+    i = rand() % state->size;
+    j = rand() % state->size;
 
-    box->value = power(2, (rand() % 2) + 1);
+    box->value = pow(2, (rand() % 2) + 1);
 
-    if (board[i][j] == NULL) {
-        board[i][j] = box;
+    if (state->currentBoard[i][j] == NULL) {
+        state->currentBoard[i][j] = box;
         return box;
 
     }
     else {
         free(box);
-        generateNewBox(board, size);
+        generateNewBox(state);
     }
 
     return box;
+  }
 	*/
 }
 
 /**
- * @fn int printBoardDebug(Box*** board, int size, SDL_Rect caseRect, SDL_Rect rectangle, SDL_Renderer *renderer)
- * @brief just a debug function that print the board
+ * @fn int printboard1(Box*** board1, int size)
+ * @brief just a debug function that print the board1
  */
-
-
-int printBoardDebug (Box * ** board, int size) {
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            (board[i][j] == NULL) ? printf("   |") : printf(" %d |", board[i][j]->value);
+int printBoardDebug(GameState * state) {
+    for (int i = 0; i < state->size; i++) {
+        for (int j = 0; j < state->size; j++) {
+            (state->currentBoard[i][j] == NULL) ? printf("   |") : printf(" %d |", state->currentBoard[i][j]->value);
         }
         printf("\n");
     }
@@ -200,8 +224,7 @@ int printBoardDebug (Box * ** board, int size) {
     return 0;
 }
 
-
-int refreshRenderer(int boxGap, int red, int green, int blue, SDL_Color white, SDL_Rect numberRect,TTF_Font *font, char* CaseNumber, SDL_Surface *numberSurface, SDL_Texture *numberTexture,  Box * ** board, int size, SDL_Rect caseRect, SDL_Rect rectangle, SDL_Renderer *renderer){
+int refreshRenderer(int boxGap, int red, int green, int blue, SDL_Color white, SDL_Rect numberRect,TTF_Font *font, char* CaseNumber, SDL_Surface *numberSurface, SDL_Texture *numberTexture,  GameState * state, SDL_Rect caseRect, SDL_Rect rectangle, SDL_Renderer *renderer){
 	SDL_SetRenderDrawColor(renderer, red, green, blue, 0);	// set color to theme color 
 	SDL_RenderClear(renderer);								// reset the screen 
 
@@ -209,17 +232,17 @@ int refreshRenderer(int boxGap, int red, int green, int blue, SDL_Color white, S
 	SDL_RenderFillRect(renderer, &rectangle);				// draw background 
 	
 	Uint8 r, g, b, a;
-    for (int y=0; y<size; y++) {
-		for (int x=0; x<size; x++){
+    for (int y=0; y<state->size; y++) {
+		for (int x=0; x<state->size; x++){
 
 			caseRect.x = rectangle.x + caseRect.w * x + boxGap * (x + 1);			//position x of the current box
 			caseRect.y = rectangle.y + caseRect.h * y + boxGap * (y + 1);			//position y of the current box
 
 			//the rectangle s color depend of the number value   
-			if ( board[y][x] == NULL ) { r = 150; g = 150; b = 150; a = 150; sprintf(CaseNumber, " ");}  
+			if ( state->currentBoard[y][x] == NULL ) { r = 150; g = 150; b = 150; a = 150; sprintf(CaseNumber, " ");}  
 			else {
-				sprintf(CaseNumber, "%d", board[y][x]->value);
-				switch (board[y][x]->value) {
+				sprintf(CaseNumber, "%d", state->currentBoard[y][x]->value);
+				switch (state->currentBoard[y][x]->value) {
 					case 2: r = 200; g = 200; b = 200; a = 150; break;
 					case 4: r = 0; g = 0; b = 0; a = 150; break;
 					case 8: r = 100; g = 100; b = 100; a = 150; break;
@@ -252,59 +275,51 @@ int refreshRenderer(int boxGap, int red, int green, int blue, SDL_Color white, S
 	return 0;
  }
 
-
-
-
-
-
-
-
-
 /**
- * @fn bool canMove(int** board, int size)
+ * @fn bool canMove(int** board1, int size)
  * @brief chech if a move is possible
- * @param board the game board
- * @param the size of the game board
+ * @param board1 the game board1
+ * @param the size of the game board1
  * @return true if a move is possible false otherwise
  */
-bool canMove(Box * ** board, int size) {
-    for (int i = 0; i < size; i++) {
-        for (int j = 0; j < size; j++) {
-            if (board[i][j] == NULL) return true;
-            if (j != size - 1 && board[i][j] != NULL && board[i][j + 1] != NULL && board[i][j]->value == board[i][j + 1]->value) return true;
-            if (i != size - 1 && board[i][j] != NULL && board[i + 1][j] != NULL && board[i][j]->value == board[i + 1][j]->value) return true;
+bool canMove(GameState * state) {
+    for (int i = 0; i < state->size; i++) {
+        for (int j = 0; j < state->size; j++) {
+            if (state->currentBoard[i][j] == NULL) return true;
+            if (j != state->size - 1 && state->currentBoard[i][j] != NULL && state->currentBoard[i][j + 1] != NULL && state->currentBoard[i][j]->value == state->currentBoard[i][j + 1]->value) return true;
+            if (i != state->size - 1 && state->currentBoard[i][j] != NULL && state->currentBoard[i + 1][j] != NULL && state->currentBoard[i][j]->value == state->currentBoard[i + 1][j]->value) return true;
         }
     }
     return false;
 }
 
 /**
- * @fn int slide(Direction dir, int ** board, int size)
- * @brief apply a move on the board
+ * @fn int slide(Direction dir, int ** board1, int size)
+ * @brief apply a move on the board1
  * @param dir The Direction where the move go
- * @param board the game board
- * @param size of the game board
+ * @param board1 the game board1
+ * @param size of the game board1
  * @return the number of move made
  */
-int slide(Directions dir, Box * ** board, int size) {
-
+int slide(Directions dir, GameState * state) {
 	int move = 0;
 	switch (dir) {
 		case LEFT:
-		for (int i = 1; i < size; i++) {
-			for (int j = 0; j < size; j++) {
+		for (int i = 1; i < state->size; i++) {
+			for (int j = 0; j < state->size; j++) {
 				int k;
-				for (k = i; k > 0 && board[j][k - 1] == NULL; k--) {
-					if (board[j][k] == NULL) continue;
-					board[j][k - 1] = board[j][k];
-					board[j][k] = NULL;
+				for (k = i; k > 0 && state->currentBoard[j][k - 1] == NULL; k--) {
+					if (state->currentBoard[j][k] == NULL) continue;
+                    state->currentBoard[j][k - 1] = state->currentBoard[j][k];
+                    state->currentBoard[j][k] = NULL;
 					move++;
 				}
 
-				if (k > 0 && board[j][k - 1] != NULL && board[j][k] != NULL && board[j][k - 1]->value == board[j][k]->value) {
-					board[j][k - 1]->value *= 2;
-					free(board[j][k]);
-                    board[j][k] = NULL;
+				if (k > 0 && state->currentBoard[j][k - 1] != NULL && state->currentBoard[j][k] != NULL && state->currentBoard[j][k - 1]->value == state->currentBoard[j][k]->value) {
+                    state->currentBoard[j][k - 1]->value *= 2;
+                    state->Currentscore = state->Currentscore + state->currentBoard[j][k - 1]->value;
+					free(state->currentBoard[j][k]);
+                    state->currentBoard[j][k] = NULL;
 					move++;
 				}
 			}
@@ -312,20 +327,21 @@ int slide(Directions dir, Box * ** board, int size) {
 		break;
 
 	case RIGHT:
-		for (int i = size - 1; i >= 0; i--) {
-			for (int j = 0; j < size; j++) {
+		for (int i = state->size - 1; i >= 0; i--) {
+			for (int j = 0; j < state->size; j++) {
 				int k;
-				for (k = i; k < size - 1 && board[j][k + 1] == NULL; k++) {
-					if (board[j][k] == NULL) continue;
-					board[j][k + 1] = board[j][k];
-					board[j][k] = NULL;
+				for (k = i; k < state->size - 1 && state->currentBoard[j][k + 1] == NULL; k++) {
+					if (state->currentBoard[j][k] == NULL) continue;
+                    state->currentBoard[j][k + 1] = state->currentBoard[j][k];
+                    state->currentBoard[j][k] = NULL;
 					move++;
 				}
 
-				if (k < size - 1 && board[j][k + 1] != NULL && board[j][k] != NULL && board[j][k + 1]->value == board[j][k]->value) {
-					board[j][k + 1]->value *= 2;
-					free(board[j][k]);
-                    board[j][k] = NULL;
+				if (k < state->size - 1 && state->currentBoard[j][k + 1] != NULL && state->currentBoard[j][k] != NULL && state->currentBoard[j][k + 1]->value == state->currentBoard[j][k]->value) {
+                    state->currentBoard[j][k + 1]->value *= 2;
+                    state->Currentscore = state->Currentscore + state->currentBoard[j][k + 1]->value;
+					free(state->currentBoard[j][k]);
+                    state->currentBoard[j][k] = NULL;
 					move++;
 				}
 			}
@@ -333,20 +349,21 @@ int slide(Directions dir, Box * ** board, int size) {
 		break;
 
 	case UP:
-		for (int i = 1; i < size; i++) {
-			for (int j = 0; j < size; j++) {
+		for (int i = 1; i < state->size; i++) {
+			for (int j = 0; j < state->size; j++) {
 				int k;
-				for (k = i; k > 0 && board[k - 1][j] == NULL; k--) {
-					if (board[k][j] == NULL) continue;
-					board[k - 1][j] = board[k][j];
-					board[k][j] = NULL;
+				for (k = i; k > 0 && state->currentBoard[k - 1][j] == NULL; k--) {
+					if (state->currentBoard[k][j] == NULL) continue;
+                    state->currentBoard[k - 1][j] = state->currentBoard[k][j];
+                    state->currentBoard[k][j] = NULL;
 					move++;
 				}
 
-				if (k > 0 && board[k - 1][j] != NULL && board[k][j] != NULL && board[k - 1][j]->value == board[k][j]->value) {
-					board[k - 1][j]->value *= 2;
-					free(board[k][j]);
-                    board[k][j] = NULL;
+				if (k > 0 && state->currentBoard[k - 1][j] != NULL && state->currentBoard[k][j] != NULL && state->currentBoard[k - 1][j]->value == state->currentBoard[k][j]->value) {
+                    state->currentBoard[k - 1][j]->value *= 2;
+                    state->Currentscore = state->Currentscore + state->currentBoard[k - 1][j]->value;
+					free(state->currentBoard[k][j]);
+                    state->currentBoard[k][j] = NULL;
 					move++;
 				}
 			}
@@ -354,20 +371,21 @@ int slide(Directions dir, Box * ** board, int size) {
 		break;
 
 	case DOWN:
-		for (int i = size - 1; i >= 0; i--) {
-			for (int j = 0; j < size; j++) {
+		for (int i = state->size - 1; i >= 0; i--) {
+			for (int j = 0; j < state->size; j++) {
 				int k;
-				for (k = i; k < size - 1 && board[k + 1][j] == NULL; k++) {
-					if (board[k][j] == NULL) continue;
-					board[k + 1][j] = board[k][j];
-					board[k][j] = NULL;
+				for (k = i; k < state->size - 1 && state->currentBoard[k + 1][j] == NULL; k++) {
+					if (state->currentBoard[k][j] == NULL) continue;
+                    state->currentBoard[k + 1][j] = state->currentBoard[k][j];
+                    state->currentBoard[k][j] = NULL;
 					move++;
 				}
 
-				if (k < size - 1 && board[k + 1][j] != NULL && board[k][j] != NULL && board[k + 1][j]->value == board[k][j]->value) {
-					board[k + 1][j]->value *= 2;
-					free(board[k][j]);
-                    board[k][j] = NULL;
+				if (k < state->size - 1 && state->currentBoard[k + 1][j] != NULL && state->currentBoard[k][j] != NULL && state->currentBoard[k + 1][j]->value == state->currentBoard[k][j]->value) {
+                    state->currentBoard[k + 1][j]->value *= 2;
+                    state->Currentscore = state->Currentscore + state->currentBoard[k + 1][j]->value;
+					free(state->currentBoard[k][j]);
+                    state->currentBoard[k][j] = NULL;
 					move++;
 				}
 			}

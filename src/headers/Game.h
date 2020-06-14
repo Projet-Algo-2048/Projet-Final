@@ -22,11 +22,11 @@
 #define BLOCK_HEIGH 110
 #define BLOCK_WIDTH 110
 
-int slide(Directions, Box * **, int);
-bool canMove(Box * **, int);
-int refreshRenderer(int, int, int, int, SDL_Color, SDL_Rect ,TTF_Font *, char* , SDL_Surface *, SDL_Texture *, Box * **, int , SDL_Rect , SDL_Rect , SDL_Renderer *);
-int printBoardDebug (Box * **, int );
-Box * generateNewBox(Box * ** , int );
+int slide(Directions, GameState *);
+bool canMove(GameState *);
+int refreshRenderer(int, int, int, int, SDL_Color, SDL_Rect ,TTF_Font *, char* , SDL_Surface *, SDL_Texture *, GameState * , SDL_Rect , SDL_Rect , SDL_Renderer *);
+int printBoardDebug (GameState *);
+Box * generateNewBox(GameState *);
 int game(int *, int *, int *, TTF_Font *, SDL_Renderer *, SDL_Window *, int);
 
 #endif
