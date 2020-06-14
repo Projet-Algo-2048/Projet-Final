@@ -171,7 +171,9 @@ int printHighScore(int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer
         blazeSurface = TTF_RenderText_Solid(font, toPrint, white);
         blazeTexture = SDL_CreateTextureFromSurface(renderer, blazeSurface);
 
-        blazeRect.y += 20;
+        blazeRect.y += 50;
+        SDL_QueryTexture(blazeTexture, NULL, NULL, &blazeRect.w, &blazeRect.h);
+        blazeRect.x = (WINDOW_LARGEUR - blazeRect.w) / 2;
         SDL_RenderCopy(renderer, blazeTexture, NULL, &blazeRect); 
       }
     
