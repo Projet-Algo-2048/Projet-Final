@@ -9,7 +9,7 @@
  * @fn int game(GameState state)
  * @brief represente the game course
  */
-int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *renderer, SDL_Window *window, int size, int players) {
+int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *renderer, SDL_Window *window, int size, int players, PlayerType * playerList) {
 	
 	//===============[INIT VIEW]====================
 
@@ -80,26 +80,14 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
 
 			if (!canMove(&state)) break;
 
+			
 			int moves = 0;
 			do {
-				while (SDL_PollEvent(&playEvent)) {
-					switch (playEvent.type) {
-					case SDL_QUIT:
-						playing = SDL_FALSE;
-						return 0;
-						break;
-
-					case SDL_KEYDOWN:
-						switch (playEvent.key.keysym.sym) {
-
-						case SDLK_LEFT: moves = slide(LEFT, &state); break;
-						case SDLK_RIGHT: moves = slide(RIGHT, &state); break;
-						case SDLK_UP: moves = slide(UP, &state); break;
-						case SDLK_DOWN: moves = slide(DOWN, &state); break;
-
-						case SDLK_ESCAPE:
-
-							//bool afin fermer completement prog ou non dependament du choix ds le sub menu pause
+				if (playerList[state.currentPlayer] == PLAYER_AI) {
+					moves = AILevel3(&state);
+					time_t t = time(NULL);
+					while(time(NULL) < t + 100 && SDL_PollEvent(&playEvent) ){
+						if (playEvent.type == SDL_KEYDOWN && playEvent.key.keysym.sym == SDLK_ESCAPE) {
 							truefalse = pauseMenu(red, green, blue, font, renderer, window);
 							if (truefalse == 0) {
 								playing = SDL_FALSE;
@@ -109,14 +97,45 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
 								playing = SDL_FALSE;
 								return 1;
 							}
-
-							break;
-
 						}
-						break;
 					}
+				} else {
 
+					while (SDL_PollEvent(&playEvent)) {
+						switch (playEvent.type) {
+							case SDL_QUIT:
+								playing = SDL_FALSE;
+								return 0;
+								break;
+
+							case SDL_KEYDOWN:
+								switch (playEvent.key.keysym.sym) {
+
+									case SDLK_LEFT: moves = slide(LEFT, &state); break;
+									case SDLK_RIGHT: moves = slide(RIGHT, &state); break;
+									case SDLK_UP: moves = slide(UP, &state); break;
+									case SDLK_DOWN: moves = slide(DOWN, &state); break;
+
+									case SDLK_ESCAPE:
+
+										//bool afin fermer completement prog ou non dependament du choix ds le sub menu pause
+										truefalse = pauseMenu(red, green, blue, font, renderer, window);
+										if (truefalse == 0) {
+											playing = SDL_FALSE;
+											return 0;
+										} else if (truefalse == 2) {
+											playing = SDL_FALSE;
+											return 1;
+										}
+									break;
+								}
+							break;
+						}
+
+
+					}
 				}
+				
 				//refresh view when event occured
 				refreshRenderer(boxGap, *red, *green, *blue, white, numberRect, font, CaseNumber, numberSurface, numberTexture, &state, caseRect, rectangle, renderer);
 				SDL_RenderPresent(renderer);
@@ -203,7 +222,7 @@ Box * generateNewBox(GameState * state) {
     i = rand() % state->size;
     j = rand() % state->size;
 
-    box->value = pow(2, (rand() % 2) + 1);
+    box->value = power(2, (rand() % 2) + 1);
 
     if (state->currentBoard[i][j] == NULL) {
         state->currentBoard[i][j] = box;
@@ -212,11 +231,8 @@ Box * generateNewBox(GameState * state) {
     }
     else {
         free(box);
-        generateNewBox(state);
+        return generateNewBox(board, size);
     }
-
-    return box;
-  }
 	*/
 }
 

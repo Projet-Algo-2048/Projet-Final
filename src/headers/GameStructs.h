@@ -6,6 +6,8 @@
 #ifndef GameStructs
 #define GameStructs
 
+#include <stdbool.h>
+
 /**
  * @enum Directions
  * @brief represente a direction
@@ -25,6 +27,8 @@ typedef enum {
 typedef struct {
     int value;                          /*< the score of the box*/
 } Box;
+
+typedef Box*** Board;
 
 /**
  * @struct GameState

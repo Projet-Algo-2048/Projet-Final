@@ -14,6 +14,7 @@
 #include "Utils.h"
 #include "SdlVar.h"
 #include "pause.h"
+#include "AI.h"
 
 #define NUMBER_OF_CASE 4
 #define RECTANGLE_WIDTH 540
@@ -22,11 +23,20 @@
 #define BLOCK_HEIGH 110
 #define BLOCK_WIDTH 110
 
+/**
+ * @enum PlayerType
+ * @brief an enumeration of all sort of player
+ */
+typedef enum {
+	PLAYER_PLAYER,		/**< player */
+	PLAYER_AI,			/**< AI */
+} PlayerType;
+
 int slide(Directions, GameState *);
 bool canMove(GameState *);
 int refreshRenderer(int, int, int, int, SDL_Color, SDL_Rect ,TTF_Font *, char* , SDL_Surface *, SDL_Texture *, GameState * , SDL_Rect , SDL_Rect , SDL_Renderer *);
 int printBoardDebug (GameState *);
 Box * generateNewBox(GameState *);
-int game(int *, int *, int *, TTF_Font *, SDL_Renderer *, SDL_Window *, int, int);
+int game(int *, int *, int *, TTF_Font *, SDL_Renderer *, SDL_Window *, int, int, PlayerType * );
 
 #endif
