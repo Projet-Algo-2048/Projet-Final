@@ -1,3 +1,6 @@
+#ifndef Game
+#define Game
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -6,8 +9,7 @@
 #include "GameStructs.h"
 #include "Utils.h"
 
-#ifndef Game
-#define Game
+
 
 int slide(Directions, Box * **, int);
 bool canMove(Box * **, int);
