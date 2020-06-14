@@ -18,3 +18,13 @@ opMenu.or = ou appuyer sur 'esc'
 paMenu.pa = Pause
 paMenu.re = Reprendre
 paMenu.ho = Menu
+
+chMenu.ch = choisir mode de jeu
+chMenu.fo = grille 4x4 
+chMenu.ei = grille 8x8 
+chMenu.jj = joueur vs joueur
+chMenu.ji = joueur VS IA
+
+goMenu.go = Gameover
+goMenu.re = Rejouer
+goMenu.ho = Menu

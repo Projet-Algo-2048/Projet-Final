@@ -36,7 +36,10 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
 	SDL_Rect numberRect;
 	SDL_QueryTexture(numberTexture, NULL, NULL, &numberRect.w, &numberRect.h);
 
+	SDL_bool general = SDL_TRUE;
 
+	while(general)
+	{
     /* initialisation of the game */
     state.board = malloc(state.size * sizeof(Box **));
 	for (int i = 0; i < state.size; i++) {
@@ -100,8 +103,19 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
         } while (moves == 0);
 	}
 
-	printf("Game Over ! \n");
-	
+	//printf("Game Over ! \n");
+	int fintf = 0;
+	fintf = gameOver(red, green, blue, font, renderer, window);
+	if (fintf == 0)
+		{
+			general=SDL_FALSE;
+			return 0;
+		}
+	else if (fintf == 2)
+		{
+			general = SDL_FALSE;
+			return 1;
+		}
 
     /* freeing memory */
     for (int i = 0; i < state.size; i++) {
@@ -110,7 +124,9 @@ int game (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *rendere
     }
     free(state.board);
 	playing = SDL_FALSE;
+	}
 	return 1;
+	
 
 	SDL_DestroyTexture(numberTexture);
 }

@@ -13,6 +13,6 @@
 #include "LinkedList.h"
 
 int pauseMenu (int *, int *, int *, TTF_Font *, SDL_Renderer *, SDL_Window *);
-int gameOver (int *, int *, int *, TTF_Font *, SDL_Renderer *, SDL_Window *)
+int gameOver (int *, int *, int *, TTF_Font *, SDL_Renderer *, SDL_Window *);
 
 #endif
