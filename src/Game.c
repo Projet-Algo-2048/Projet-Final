@@ -14,6 +14,8 @@
      /* initialisation of the game */
      GameState state;
      state.size = 4;
+     state.score =0;
+
 
      state.board1 = malloc(state.size * sizeof(Box **));
      for (int i = 0; i < state.size; i++) {
@@ -59,15 +61,15 @@
                  scanf("%d", &c);
              } while (c != 2 && c != 6 && c != 8 && c != 4);
              switch (c) {
-             case 4: moves = slide(LEFT, board, state.size); break;
-             case 6: moves = slide(RIGHT, board, state.size); break;
-             case 8: moves = slide(UP, board, state.size); break;
-             case 2: moves = slide(DOWN, board, state.size); break;
+             case 4: moves = slide(LEFT, board, state.size,&state.score); break;
+             case 6: moves = slide(RIGHT, board, state.size,&state.score); break;
+             case 8: moves = slide(UP, board, state.size,&state.score); break;
+             case 2: moves = slide(DOWN, board, state.size,&state.score); break;
 
-           }
-             if (moves == 0) printf("2Can not move like that %c\n", c);
+           } if (moves == 0) printf("2Can not move like that %c\n", c);
          } while (moves == 0);
  	}
+  printf("Score : %d\n",state.score);
  	printf("Game Over ! \n");
      /* freeing memory */
      for (int i = 0; i < state.size; i++) {
@@ -160,8 +162,7 @@ bool canMove(Box * ** board1, int size) {
  * @param size of the game board1
  * @return the number of move made
  */
-int slide(Directions dir, Box * ** board1, int size) {
-
+int slide(Directions dir, Box *** board1, int size, int * score) {
 	int move = 0;
 	switch (dir) {
 		case LEFT:
@@ -177,6 +178,7 @@ int slide(Directions dir, Box * ** board1, int size) {
 
 				if (k > 0 && board1[j][k - 1] != NULL && board1[j][k] != NULL && board1[j][k - 1]->value == board1[j][k]->value) {
 					board1[j][k - 1]->value *= 2;
+          *score=*score+board1[j][k - 1]->value;
 					free(board1[j][k]);
                     board1[j][k] = NULL;
 					move++;
@@ -198,6 +200,7 @@ int slide(Directions dir, Box * ** board1, int size) {
 
 				if (k < size - 1 && board1[j][k + 1] != NULL && board1[j][k] != NULL && board1[j][k + 1]->value == board1[j][k]->value) {
 					board1[j][k + 1]->value *= 2;
+          *score=*score+board1[j][k + 1]->value;
 					free(board1[j][k]);
                     board1[j][k] = NULL;
 					move++;
@@ -219,6 +222,7 @@ int slide(Directions dir, Box * ** board1, int size) {
 
 				if (k > 0 && board1[k - 1][j] != NULL && board1[k][j] != NULL && board1[k - 1][j]->value == board1[k][j]->value) {
 					board1[k - 1][j]->value *= 2;
+          *score=*score+board1[k-1][j]->value;
 					free(board1[k][j]);
                     board1[k][j] = NULL;
 					move++;
@@ -240,6 +244,7 @@ int slide(Directions dir, Box * ** board1, int size) {
 
 				if (k < size - 1 && board1[k + 1][j] != NULL && board1[k][j] != NULL && board1[k + 1][j]->value == board1[k][j]->value) {
 					board1[k + 1][j]->value *= 2;
+          *score=*score+board1[k+1][j]->value;
 					free(board1[k][j]);
                     board1[k][j] = NULL;
 					move++;

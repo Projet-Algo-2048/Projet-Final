@@ -9,7 +9,7 @@
 #ifndef Game
 #define Game
 
-int slide(Directions, Box * **, int);
+int slide(Directions, Box * **, int, int*);
 bool canMove(Box * **, int);
 int printBoard(Box * **, int);
 Box * generateNewBox(Box * ** , int );
