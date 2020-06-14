@@ -140,7 +140,7 @@ int pauseMenu (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *re
 }
 
 
-int gameOver (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *renderer, SDL_Window *window)
+int gameOver (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *renderer, SDL_Window *window, GameState * state)
     {
         //clear the renderer memory
         SDL_RenderClear(renderer);
@@ -164,6 +164,19 @@ int gameOver (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *ren
         gameoverRect.x = (WINDOW_LARGEUR - gameoverRect.w) / 2;
         gameoverRect.y = 50;
 
+        /************multiplayer***********/
+        char playerText[32] = "You lose";
+        font = TTF_OpenFont("ressources/SDL/font/Gameplay.ttf", 40);
+        if (state->playerNumber > 1) sprintf(playerText, "Player %d has lost", state->currentPlayer);
+
+        SDL_Surface* pTextSurface = TTF_RenderText_Solid(font, playerText, white);
+        SDL_Texture* pTextTexture = SDL_CreateTextureFromSurface(renderer, pTextSurface);
+
+        SDL_Rect pTextRect;
+        SDL_QueryTexture(pTextTexture, NULL, NULL, &pTextRect.w, &pTextRect.h);
+        pTextRect.x = (WINDOW_LARGEUR - pTextRect.w) / 2;
+        pTextRect.y = gameoverRect.y + gameoverRect.h + 25;;   
+
         /**************RESTART***********/
         fontSize = 60;
         font = TTF_OpenFont("ressources/SDL/font/Gameplay.ttf",fontSize);
@@ -176,7 +189,7 @@ int gameOver (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *ren
         SDL_Rect restartRect;
         SDL_QueryTexture(restartTexture, NULL, NULL, &restartRect.w, &restartRect.h);
         restartRect.x = (WINDOW_LARGEUR - restartRect.w) / 2;
-        restartRect.y = gameoverRect.y + gameoverRect.h + 100;
+        restartRect.y = gameoverRect.y + gameoverRect.h + 150;
 
         /*************HOME***************/
         SDL_Surface *homeSurface = TTF_RenderText_Solid(font, getTranslatedText("goMenu.ho"), white);
@@ -276,6 +289,8 @@ int gameOver (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *ren
         SDL_RenderCopy(renderer, gameoverTexture, NULL, &gameoverRect);
         SDL_RenderCopy(renderer, restartTexture, NULL, &restartRect);
         SDL_RenderCopy(renderer, homeTexture, NULL, &homeRect);
+        SDL_RenderCopy(renderer, pTextTexture, NULL, &pTextRect);
+        
 
         //display the loaded renderer
          SDL_RenderPresent(renderer);
@@ -285,6 +300,7 @@ int gameOver (int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *ren
     SDL_DestroyTexture(gameoverTexture);
     SDL_DestroyTexture(restartTexture);
     SDL_DestroyTexture(homeTexture);
+    SDL_DestroyTexture(pTextTexture);
 }
 
 

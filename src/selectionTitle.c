@@ -76,6 +76,18 @@ int selectGame(int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *re
         JvIATextureRect.x = (WINDOW_LARGEUR - JvIATextureRect.w) / 2;
         JvIATextureRect.y = JvJTextureRect.y + JvJTextureRect.h + 40;
 
+        /*************** IA alone *******************/
+        SDL_Surface* IASurface = TTF_RenderText_Solid(font, getTranslatedText("chMenu.ia"), white);
+        if (!IASurface)
+            SDL_EXITWITHERROR("creation IA surface");
+        SDL_Texture* IATexture = SDL_CreateTextureFromSurface(renderer, IASurface);
+        if (!IATexture)
+            SDL_EXITWITHERROR("creation IATexture");
+        SDL_Rect IATextureRect;
+        SDL_QueryTexture(JvIATexture, NULL, NULL, &IATextureRect.w, &IATextureRect.h);
+        IATextureRect.x = (WINDOW_LARGEUR - IATextureRect.w) / 2;
+        IATextureRect.y = JvIATextureRect.y + JvIATextureRect.h + 40;
+
 
 
 
@@ -170,6 +182,22 @@ int selectGame(int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *re
                                     }
                                 break;
 
+                                // IA
+                                if ((mouse_x < IATextureRect.x + IATextureRect.w) &&
+                                    (mouse_x > IATextureRect.x) &&
+                                    (mouse_y < IATextureRect.y + IATextureRect.h) &&
+                                    (mouse_y > IATextureRect.y))
+                                {
+                                    JvIASurface = TTF_RenderText_Solid(font, getTranslatedText("chMenu.ia"), rouge);
+                                    JvIATexture = SDL_CreateTextureFromSurface(renderer, JvIASurface);
+                                }
+                                else
+                                {
+                                    JvIASurface = TTF_RenderText_Solid(font, getTranslatedText("chMenu.ia"), white);
+                                    JvIATexture = SDL_CreateTextureFromSurface(renderer, JvIASurface);
+                                }
+                                break;
+
 
                                 case SDL_MOUSEBUTTONDOWN:
                                 //case '4x4' l
@@ -178,7 +206,8 @@ int selectGame(int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *re
                                     (selectionEvent.button.y < fourTextureRect.y + fourTextureRect.h)&&
                                     (selectionEvent.button.y > fourTextureRect.y))
                                         {
-                                            truefalse = game(red, green, blue, font, renderer, window, 4);
+                                    PlayerType list[] = { PLAYER_PLAYER };
+                                    truefalse = game(red, green, blue, font, renderer, window, 4, 1, list);
                                             if (truefalse == 0)
 													{
 														selectionRunning = SDL_FALSE;
@@ -193,8 +222,11 @@ int selectGame(int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *re
 
                                 if ((selectionEvent.button.x < eightTextureRect.x + eightTextureRect.w) && (selectionEvent.button.x > eightTextureRect.x) &&
                                     (selectionEvent.button.y < eightTextureRect.y + eightTextureRect.h) && (selectionEvent.button.y > eightTextureRect.y)) {
-                                    printf("loadding 4x4 board\n");
-                                    truefalse = game(red, green, blue, font, renderer, window, 8);
+
+                                    printf("loadding 8x8 board\n");
+                                    PlayerType list[] = { PLAYER_PLAYER };
+                                    truefalse = game(red, green, blue, font, renderer, window, 8, 1, list);
+
                                     if (truefalse == 0) {
                                         selectionRunning = SDL_FALSE;
                                         return 0;
@@ -203,6 +235,62 @@ int selectGame(int *red, int *green, int *blue, TTF_Font *font, SDL_Renderer *re
                                         return 1;
                                     }
                                 }
+
+                                if ((selectionEvent.button.x < JvJTextureRect.x + JvJTextureRect.w) && (selectionEvent.button.x > JvJTextureRect.x) &&
+                                    (selectionEvent.button.y < JvJTextureRect.y + JvJTextureRect.h) && (selectionEvent.button.y > JvJTextureRect.y)) {
+
+                                    printf("loadding JvJ board\n");
+                                    PlayerType list[] = { PLAYER_PLAYER, PLAYER_PLAYER };
+                                    truefalse = game(red, green, blue, font, renderer, window, 4, 2, list);
+
+                                    if (truefalse == 0) {
+                                        selectionRunning = SDL_FALSE;
+                                        return 0;
+                                    }
+                                    else if (truefalse == 1) {
+                                        selectionRunning = SDL_FALSE;
+                                        return 1;
+                                    }
+                                }
+                                
+                                
+                                if ((selectionEvent.button.x < JvIATextureRect.x + JvIATextureRect.w) && (selectionEvent.button.x > JvIATextureRect.x) &&
+                                    (selectionEvent.button.y < JvIATextureRect.y + JvIATextureRect.h) && (selectionEvent.button.y > JvIATextureRect.y)) {
+
+                                    printf("loadding 8x8 board\n");
+                                    PlayerType list[] = { PLAYER_PLAYER, PLAYER_AI };
+                                    truefalse = game(red, green, blue, font, renderer, window, 4, 2, list);
+
+                                    if (truefalse == 0) {
+                                        selectionRunning = SDL_FALSE;
+                                        return 0;
+                                    }
+                                    else if (truefalse == 1) {
+                                        selectionRunning = SDL_FALSE;
+                                        return 1;
+                                    }
+                                }
+                                
+
+                                
+                                if ((selectionEvent.button.x < IATextureRect.x + IATextureRect.w) && (selectionEvent.button.x > IATextureRect.x) &&
+                                    (selectionEvent.button.y < IATextureRect.y + IATextureRect.h) && (selectionEvent.button.y > IATextureRect.y)) {
+
+                                    printf("loadding AI Game\n");
+                                    PlayerType list[] = { PLAYER_AI };
+                                    truefalse = game(red, green, blue, font, renderer, window, 4, 1, list);
+
+                                    if (truefalse == 0) {
+                                        selectionRunning = SDL_FALSE;
+                                        return 0;
+                                    }
+                                    else if (truefalse == 1) {
+                                        selectionRunning = SDL_FALSE;
+                                        return 1;
+                                    }
+                                }
+                                
+                                
                             }
                     }
 
